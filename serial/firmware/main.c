@@ -3,6 +3,9 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/wdt.h>
+
+#include <util/delay.h>
 
 #include "uart.h"
 
@@ -36,8 +39,15 @@
 uint8_t sharp_ce125_option_bits_received = 0;
 uint8_t sharp_ce125_option_byte_in = 0;
 
+volatile bool sharp_ce125_option_timeout = false;
+
+ISR(WDT_OVERFLOW_vect) {
+	WDTCR |= _BV(WDIE);
+	sharp_ce125_option_timeout = true;
+}
+
 void sharp_ce125_option_init(void) {
-	
+	wdt_enable(WDTO_60MS);
 }
 
 void sharp_ce125_option_acl(void) {
@@ -66,11 +76,28 @@ void sharp_ce125_option_received_byte(uint8_t value) {
 int main(void) {
 	
 	uart_init();
-	sharp_ce125_option_init();
 	
 	sei();
 	
+	uart_write_byte('S');
+	uart_write_byte('t');
+	uart_write_byte('a');
+	uart_write_byte('r');
+	uart_write_byte('t');
+	uart_write_byte('.');
+	uart_write_byte('.');
+	uart_write_byte('.');
+	_delay_ms(500);
+	uart_write_byte('O');
+	uart_write_byte('K');
+	uart_write_byte('\r');
+	uart_write_byte('\n');
+	
+	sharp_ce125_option_init();
+	
 	for (;;) {
+		
+		wdt_reset();
 		
 		if (!(SHARP_CE125_OPTION_PIN & _BV(SHARP_CE125_OPTION_OP2))) {
 			// Addressing some other device, not us
@@ -95,9 +122,16 @@ int main(void) {
 			// Drive ACK high
 			SHARP_CE125_OPTION_DDR |= _BV(SHARP_CE125_OPTION_ACK);
 			SHARP_CE125_OPTION_PORT |= _BV(SHARP_CE125_OPTION_ACK);
-			
+				
 			// Wait for BUSY to go back low
-			while (SHARP_CE125_OPTION_PIN & _BV(SHARP_CE125_OPTION_BUSY));
+			wdt_reset();
+			sharp_ce125_option_timeout = false;
+			while (SHARP_CE125_OPTION_PIN & _BV(SHARP_CE125_OPTION_BUSY)) {
+				if (sharp_ce125_option_timeout) {
+					sharp_ce125_option_bits_received = -1;
+					break;
+				}
+			}
 			
 			// Release ACK
 			SHARP_CE125_OPTION_PORT &= ~_BV(SHARP_CE125_OPTION_ACK);
