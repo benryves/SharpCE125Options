@@ -47,7 +47,9 @@ ISR(WDT_OVERFLOW_vect) {
 }
 
 void sharp_ce125_option_init(void) {
-	wdt_enable(WDTO_60MS);
+	wdt_enable(WDTO_15MS);
+	wdt_reset();
+	WDTCR |= _BV(WDIE);
 }
 
 void sharp_ce125_option_acl(void) {
@@ -67,14 +69,74 @@ void debug_hex_byte(uint8_t value) {
 	debug_hex_nybble(value);
 }
 
+bool sharp_ce125_option_send_byte(uint8_t value) {
+	
+	bool sent = false;
+
+	for (uint8_t i = 0; i < 8; ++i) {
+		
+		_delay_us(250);
+		
+		if (value & 1) {
+			// Drive Din high
+			SHARP_CE125_OPTION_PORT |= _BV(SHARP_CE125_OPTION_DIN);
+			SHARP_CE125_OPTION_DDR |= _BV(SHARP_CE125_OPTION_DIN);
+		} else {
+			// Release Din low
+			SHARP_CE125_OPTION_DDR &= ~_BV(SHARP_CE125_OPTION_DIN);
+			SHARP_CE125_OPTION_PORT &= ~_BV(SHARP_CE125_OPTION_DIN);
+		}
+		value >>= 1;
+		
+		// Drive ACK high
+		SHARP_CE125_OPTION_PORT |= _BV(SHARP_CE125_OPTION_ACK);
+		SHARP_CE125_OPTION_DDR |= _BV(SHARP_CE125_OPTION_ACK);
+
+		// Wait for BUSY to go high
+		wdt_reset();
+		sharp_ce125_option_timeout = false;
+		while (!(SHARP_CE125_OPTION_PIN & _BV(SHARP_CE125_OPTION_BUSY))) {
+			if (sharp_ce125_option_timeout) goto timeout;
+		}
+
+		// Release ACK low
+		SHARP_CE125_OPTION_DDR &= ~_BV(SHARP_CE125_OPTION_ACK);
+		SHARP_CE125_OPTION_PORT &= ~_BV(SHARP_CE125_OPTION_ACK);
+		
+		// Wait for BUSY to go low
+		wdt_reset();
+		sharp_ce125_option_timeout = false;
+		while (SHARP_CE125_OPTION_PIN & _BV(SHARP_CE125_OPTION_BUSY)) {
+			if (sharp_ce125_option_timeout) goto timeout;
+		}
+	}
+
+	sent = true;
+
+timeout:;
+	// Ensure ACK is released
+	SHARP_CE125_OPTION_DDR &= ~_BV(SHARP_CE125_OPTION_ACK);
+	SHARP_CE125_OPTION_PORT &= ~_BV(SHARP_CE125_OPTION_ACK);
+
+	// Release Din
+	SHARP_CE125_OPTION_DDR &= ~_BV(SHARP_CE125_OPTION_DIN);
+	SHARP_CE125_OPTION_PORT &= ~_BV(SHARP_CE125_OPTION_DIN);
+	
+	return sent;
+}
+
 void sharp_ce125_option_received_byte(uint8_t value) {
-	uart_write_byte('&');
-	debug_hex_byte(value);
-	uart_write_byte(' ');
+		
+	if (value == SHARP_CE125_OPTION_CMD_INSTAT) {
+		if (sharp_ce125_option_send_byte(123)) {
+			sharp_ce125_option_send_byte(0x0D);	
+		}
+	}
 }
 
 int main(void) {
 	
+	sharp_ce125_option_init();
 	uart_init();
 	
 	sei();
@@ -93,11 +155,7 @@ int main(void) {
 	uart_write_byte('\r');
 	uart_write_byte('\n');
 	
-	sharp_ce125_option_init();
-	
 	for (;;) {
-		
-		wdt_reset();
 		
 		if (!(SHARP_CE125_OPTION_PIN & _BV(SHARP_CE125_OPTION_OP2))) {
 			// Addressing some other device, not us
