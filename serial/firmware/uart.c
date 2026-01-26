@@ -1,0 +1,228 @@
+#include <stdlib.h>
+#include <stdbool.h>
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
+#include <util/atomic.h>
+
+#include "uart.h"
+
+volatile uint8_t uart_data_out = 0;
+volatile uint8_t uart_data_out_counter = 0;
+
+volatile uint8_t uart_in_buffer[UART_IN_BUFFER_SIZE];
+volatile uint8_t uart_in_buffer_read = 0;
+volatile uint8_t uart_in_buffer_write = 0;
+volatile uint8_t uart_in_buffer_count = 0;
+
+volatile uint8_t uart_out_buffer[UART_OUT_BUFFER_SIZE];
+volatile uint8_t uart_out_buffer_read = 0;
+volatile uint8_t uart_out_buffer_write = 0;
+volatile uint8_t uart_out_buffer_count = 0;
+
+volatile uint8_t uart_previous_pin = 0;
+
+ISR(UART_RXD_PCINT_vect) {
+	
+	// Capture new state of the pins
+	uint8_t uart_current_pin = UART_PIN;
+	// What changed?
+	uint8_t uart_changed_pin = (uart_current_pin ^ uart_previous_pin) & PCMSK;
+	
+	// Is it a start bit from the UART?
+	if (uart_changed_pin & uart_current_pin & _BV(UART_RXD)) {
+		// Disable UART pin change interrupts
+		UART_RXD_PCINT_MSK &= ~_BV(UART_RXD_PCINT);
+		
+		// Get Timer0 running to capture the first bit
+		OCR0A = (UART_TIMER_CYCLES / 2) - UART_TIMER_SETUP_CYCLES - 1;
+		TCNT0 = 0;
+		TIFR = _BV(OCF0A);
+		TIMSK |= _BV(OCIE0A);
+	}
+	
+	// Store previous state of the pins
+	uart_previous_pin = uart_current_pin;
+}
+
+ISR(TIMER0_COMPA_vect) {
+	// We're now half a bit into receiving the data
+	TIMSK &= ~_BV(OCIE0A);
+	OCR0A = UART_TIMER_CYCLES - 1;
+	TCNT0 = 0;
+	USICR = _BV(USIOIE) | _BV(USICS0);
+	USISR = _BV(USIOIF) | (8 << USICNT0);
+}
+
+ISR(USI_OVERFLOW_vect) {
+	
+	// Capture USI data and disable USI
+	uint8_t value = USIBR;
+	USICR = 0;
+	
+	// Invert and store
+	if (uart_in_buffer_count < UART_IN_BUFFER_SIZE) {
+		// Swap bit order
+		value = (value & 0xF0) >> 4 | (value & 0x0F) << 4;
+		value = (value & 0xCC) >> 2 | (value & 0x33) << 2;
+		value = (value & 0xAA) >> 1 | (value & 0x55) << 1;
+		uart_in_buffer[uart_in_buffer_write] = ~value;
+		if (++uart_in_buffer_write == UART_IN_BUFFER_SIZE) {
+			uart_in_buffer_write = 0;
+		}
+		++uart_in_buffer_count;
+	}
+	
+	// Re-enable pin change interrupts to capture next byte
+	GIFR |= _BV(UART_RXD_PCINT_IF);
+	UART_RXD_PCINT_MSK |= _BV(UART_RXD_PCINT);
+	uart_previous_pin = UART_PIN;
+}
+
+ISR(UART_TXD_COMP_vect) {
+	
+	// Is it the first bit? If so, fetch the byte to transmit.
+	if (uart_data_out_counter == 0) {
+		uart_data_out = ~uart_out_buffer[uart_out_buffer_read];
+		if (++uart_out_buffer_read == UART_OUT_BUFFER_SIZE) {
+			uart_out_buffer_read = 0;
+		}
+		--uart_out_buffer_count;
+	}
+	
+	// Value of next bit to clock out
+	if (uart_data_out & 1) {
+		#ifdef TCCR1A
+		TCCR1A |= _BV(UART_TXD_COM0);
+		#endif
+		#ifdef TCCR1
+		TCCR1 |= _BV(UART_TXD_COM0);
+		#endif
+	} else {
+		#ifdef TCCR1A
+		TCCR1A &= ~_BV(UART_TXD_COM0);
+		#endif
+		#ifdef TCCR1
+		TCCR1 &= ~_BV(UART_TXD_COM0);
+		#endif
+	}
+	
+	// Check end of byte
+	if (uart_data_out_counter >= 9) {
+		if (uart_out_buffer_count == 0) {
+			if (uart_data_out_counter >= 10) {
+				// Buffer is empty and we've finished sending the stop bit, so disable interrupts
+				TIMSK &= ~_BV(UART_TXD_OCIE);
+			} else {
+				// Pad out the final stop bit to ensure gaps between bytes
+				++uart_data_out_counter;
+			}
+		} else {
+			// Still more in the buffer, so prepare the next iteration
+			uart_data_out_counter = 0;
+			#ifdef TCCR1A
+			TCCR1A |= _BV(UART_TXD_COM0);
+			#endif
+			#ifdef TCCR1
+			TCCR1 |= _BV(UART_TXD_COM0);
+			#endif
+			
+		}
+	} else {
+		// Advance to next bit
+		uart_data_out >>= 1;
+		++uart_data_out_counter;
+	}
+}
+
+void uart_write_byte(uint8_t value) {
+	
+	// Wait for free space to appear in the buffer
+	while (uart_out_buffer_count >= UART_OUT_BUFFER_SIZE);
+	
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		// Enqueue the byte to send
+		uart_out_buffer[uart_out_buffer_write] = value;
+		if (++uart_out_buffer_write == UART_OUT_BUFFER_SIZE) {
+			uart_out_buffer_write = 0;
+		}
+		++uart_out_buffer_count;
+		
+		// If not currently sending, trigger the first bit to kick off the transfer
+		if (!(TIMSK & _BV(UART_TXD_OCIE))) {
+			
+			// Start bit
+			uart_data_out_counter = 0;
+			TCNT1 = 0;
+			
+			#ifdef TCCR1A
+			TCCR1A |= _BV(UART_TXD_COM0);
+			#endif
+			#ifdef TCCR1
+			TCCR1 |= _BV(UART_TXD_COM0);
+			#endif
+			
+			// Enable the interrupt to prepare the next bit
+			TIFR |= _BV(UART_TXD_OCF);
+			TIMSK |= _BV(UART_TXD_OCIE);
+			
+			// Trigger the interrupt
+			TCNT1 = UART_TIMER_CYCLES - 2;
+		}
+	}
+	
+}
+
+bool uart_read_byte(uint8_t *value) {
+	bool read = false;
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		if (uart_in_buffer_count > 0) {
+			*value = uart_in_buffer[uart_in_buffer_read];
+			if (++uart_in_buffer_read == UART_IN_BUFFER_SIZE) {
+				uart_in_buffer_read = 0;
+			}
+			--uart_in_buffer_count;
+			read = true;
+		}
+	}
+	return read;
+}
+
+void uart_init(void) {
+	
+	// Drive UART TXD as output
+	UART_DDR |= _BV(UART_TXD);
+	
+	// Configure Timer0 as the UART receiver clock
+	TCCR0A = (2 << WGM00);
+	TCCR0B = (UART_TIMER0_CLOCKSEL << CS00);
+	#ifdef PSR0
+	GTCCR |= _BV(PSR0);
+	#endif
+	
+	// Configure Timer1 as the UART transmitter clock
+	#ifdef TCCR1A
+	TCCR1A = _BV(UART_TXD_COM1);
+	#endif
+	#ifdef TCCR1B
+	TCCR1B = _BV(WGM12) | (UART_TIMER1_CLOCKSEL << CS10);
+	#endif
+	#ifdef TCCR1
+	TCCR1 = _BV(CTC1) | _BV(UART_TXD_COM1) | (UART_TIMER1_CLOCKSEL << CS10);
+	#endif
+	
+	OCR1A = UART_TIMER_CYCLES - 1;
+	#ifdef OCR1C
+	OCR1C = UART_TIMER_CYCLES - 1;
+	#endif
+	
+	#ifdef PSR10
+	GTCCR |= _BV(PSR10);
+	#endif
+
+	// Enable pin-change interrupts
+	uart_previous_pin = UART_PIN;
+	UART_RXD_PCINT_MSK |= _BV(UART_RXD_PCINT);
+	GIMSK |= _BV(UART_RXD_PCINT_IE);
+}
