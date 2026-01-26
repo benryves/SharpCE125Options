@@ -428,12 +428,12 @@ void sharp_ce125_option_received_byte(uint8_t value) {
 						sharp_ce125_option_reset_checksum();
 
 						// Send the program data
-						for (int i = 0; i < sizeof(program); ++i) {
+						for (size_t i = 0; i < sizeof(program); ++i) {
 							if (!sharp_ce125_option_send_byte_with_checksum(pgm_read_byte(&program[i]))) goto send_done;
 						}
 
 						// Send 8 terminating bytes
-						for (int i = 0; i < 8; ++i) {
+						for (uint8_t i = 0; i < 8; ++i) {
 							if (!sharp_ce125_option_send_byte_with_checksum(0xFF)) goto send_done;
 						}
 						sharp_ce125_option_send_byte(0x0D); // End of transmission
@@ -538,7 +538,7 @@ void sharp_ce125_option_return_byte(uint8_t value) {
 			// Send checksummed data
 			if (value == 0x0D) {
 				// Send terminator
-				for (int i = 0; i < 8; ++i) {
+				for (uint8_t i = 0; i < 8; ++i) {
 					if (!sharp_ce125_option_send_byte_with_checksum(0xFF)) goto send_done;
 				}
 				sharp_ce125_option_send_byte(0x0D); // End of transmission
@@ -620,6 +620,7 @@ int main(void) {
 			}
 			
 		} else if (uart_read_byte(&value)) {
+			// Transmit a byte of data back to the computer
 			sharp_ce125_option_return_byte(value);
 		}
 		
