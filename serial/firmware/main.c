@@ -203,13 +203,13 @@ void sharp_ce125_option_setcom(uint8_t mode, uint8_t devices) {
 uint8_t sharp_ce125_option_checksum;
 uint8_t sharp_ce125_option_checksum_count;
 uint8_t sharp_ce125_option_checksum_reset = 80;
-void sharp_ce125_option_reset_sharp_ce125_option_checksum(void) {
+void sharp_ce125_option_reset_checksum(void) {
   sharp_ce125_option_checksum = 0;
   sharp_ce125_option_checksum_count = 0;
   sharp_ce125_option_checksum_reset = 80;
 }
 
-bool sharp_ce125_option_send_byte_with_sharp_ce125_option_checksum(uint8_t value) {
+bool sharp_ce125_option_send_byte_with_checksum(uint8_t value) {
   
   // Send the byte
   if (!sharp_ce125_option_send_byte(value)) return false;
@@ -417,7 +417,7 @@ void sharp_ce125_option_received_byte(uint8_t value) {
 				case SHARP_CE125_OPTION_CMD_INPUTFILE:
 				case SHARP_CE125_OPTION_CMD_KEYGET:
 				case SHARP_CE125_OPTION_CMD_CLOAD:
-					sharp_ce125_option_reset_sharp_ce125_option_checksum();
+					sharp_ce125_option_reset_checksum();
 					sharp_ce125_option_data_header_count = 0;
 					sharp_ce125_option_data_size = 0;
 					sharp_ce125_option_send_mode = value;
@@ -425,16 +425,16 @@ void sharp_ce125_option_received_byte(uint8_t value) {
 				case SHARP_CE125_OPTION_CMD_ROM:
 					{
 						// Reset the sharp_ce125_option_checksum
-						sharp_ce125_option_reset_sharp_ce125_option_checksum();
+						sharp_ce125_option_reset_checksum();
 
 						// Send the program data
 						for (int i = 0; i < sizeof(program); ++i) {
-							if (!sharp_ce125_option_send_byte_with_sharp_ce125_option_checksum(pgm_read_byte(&program[i]))) goto send_done;
+							if (!sharp_ce125_option_send_byte_with_checksum(pgm_read_byte(&program[i]))) goto send_done;
 						}
 
 						// Send 8 terminating bytes
 						for (int i = 0; i < 8; ++i) {
-							if (!sharp_ce125_option_send_byte_with_sharp_ce125_option_checksum(0xFF)) goto send_done;
+							if (!sharp_ce125_option_send_byte_with_checksum(0xFF)) goto send_done;
 						}
 						sharp_ce125_option_send_byte(0x0D); // End of transmission
 					send_done:;
@@ -446,6 +446,113 @@ void sharp_ce125_option_received_byte(uint8_t value) {
 			}
 			break;
 	}
+}
+
+void sharp_ce125_option_return_byte(uint8_t value) {
+	switch (sharp_ce125_option_send_mode) {
+		case SHARP_CE125_OPTION_CMD_INPUT:
+		case SHARP_CE125_OPTION_CMD_KEYGET:
+			// Send a single key token
+			if (value != 0x0D) {
+				if (value == '~') {
+					value = 0x4D;
+				} else if (value < 0x20) {
+					value = 0;
+				} else {
+					value -= 0x20;
+					if (value < sizeof(sharp_ce125_option_ascii_to_token)) {
+						value = pgm_read_byte(&sharp_ce125_option_ascii_to_token[value]);
+					} else {
+						value = 0;
+					}
+				}
+			}
+			if (value) {
+				if (value == 0x0D) {
+					value = 0x00;
+				}
+				if (sharp_ce125_option_send_byte(value)) {
+					sharp_ce125_option_send_byte(0x0D);
+				}
+				sharp_ce125_option_send_mode = 0;
+			}
+			break;
+		case SHARP_CE125_OPTION_CMD_INPUTFILE:
+			// Send data with checksum
+			if (sharp_ce125_option_data_header_count == 0) {
+				sharp_ce125_option_reset_checksum();
+				sharp_ce125_option_checksum_count = 3;
+				sharp_ce125_option_checksum_reset = 8;
+			}
+			if (!sharp_ce125_option_send_byte_with_checksum(value)) {
+				sharp_ce125_option_acl();
+			} else {
+				switch (sharp_ce125_option_data_header_count) {
+					case 0: // MSB of size
+						// Was this the end of the transmission?
+						if (value == 0x0D && sharp_ce125_option_data_size != 0) {
+							sharp_ce125_option_acl();
+						} else {
+							sharp_ce125_option_data_size = value << 8;
+							++sharp_ce125_option_data_header_count;
+						}
+						break;
+					case 1: // LSB of size
+						sharp_ce125_option_data_size |= value;
+						sharp_ce125_option_data_count = 0;
+						++sharp_ce125_option_data_header_count;
+						
+						// We should expect at least three more bytes now
+						if (sharp_ce125_option_data_size < 3) {
+							sharp_ce125_option_data_header_count = 0;
+							sharp_ce125_option_acl();
+						}
+						break;
+					case 2: // Row upper bound
+					case 3: // Column upper bound
+					case 4: // Element size
+						++sharp_ce125_option_data_header_count;
+					default:
+						// We sent the data
+						++sharp_ce125_option_data_count;
+
+						// Is that the end of the variable?
+						if (sharp_ce125_option_data_size == 0xFE00) {
+							// 8-byte variables - INPUT#, INPUT# V
+							if (((sharp_ce125_option_data_count & 7) == 4) && (value == 0x0F)) {
+								// Reset for next variable
+								sharp_ce125_option_data_header_count = 0;
+							}
+						} else {
+							// Array variables - INPUT# V(*)
+							if (sharp_ce125_option_data_count >= sharp_ce125_option_data_size) {
+								// Reset for next variable
+								sharp_ce125_option_data_header_count = 0;
+							}
+						}
+						break;
+				}
+			}
+			break;
+		case SHARP_CE125_OPTION_CMD_CLOAD:
+			// Send checksummed data
+			if (value == 0x0D) {
+				// Send terminator
+				for (int i = 0; i < 8; ++i) {
+					if (!sharp_ce125_option_send_byte_with_checksum(0xFF)) goto send_done;
+				}
+				sharp_ce125_option_send_byte(0x0D); // End of transmission
+			send_done:;
+				sharp_ce125_option_send_mode = 0;
+			} else {
+				// Send single byte
+				if (!sharp_ce125_option_send_byte_with_checksum(value)) {
+					sharp_ce125_option_send_mode = 0;
+				}
+			}
+			break;
+	}
+	
 }
 
 int main(void) {
@@ -468,6 +575,8 @@ int main(void) {
 	uart_write_byte('K');
 	uart_write_byte('\r');
 	uart_write_byte('\n');
+	
+	uint8_t value;
 	
 	for (;;) {
 		
@@ -510,6 +619,8 @@ int main(void) {
 				sharp_ce125_option_received_byte(sharp_ce125_option_byte_in);
 			}
 			
+		} else if (uart_read_byte(&value)) {
+			sharp_ce125_option_return_byte(value);
 		}
 		
 	}
