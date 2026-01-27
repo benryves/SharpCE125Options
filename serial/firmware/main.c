@@ -558,7 +558,7 @@ void sharp_ce125_option_return_byte(uint8_t value) {
 int main(void) {
 	
 	sharp_ce125_option_init();
-	uart_init(9600);
+	uart_init(9600, 8, UART_PARITY_NONE, 1);
 	
 	sei();
 	

@@ -38,7 +38,11 @@
 #define UART_IN_BUFFER_SIZE (32)
 #define UART_OUT_BUFFER_SIZE (32)
 
-void uart_init(uint16_t baud);
+#define UART_PARITY_NONE (0)
+#define UART_PARITY_EVEN (1)
+#define UART_PARITY_ODD  (2)
+
+void uart_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits);
 
 void uart_write_byte(uint8_t value);
 bool uart_read_byte(uint8_t *value);

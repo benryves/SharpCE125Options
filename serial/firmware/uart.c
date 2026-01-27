@@ -10,6 +10,7 @@
 
 volatile uint8_t uart_data_out = 0;
 volatile uint8_t uart_data_out_counter = 0;
+volatile uint8_t uart_data_out_parity = 0;
 
 volatile uint8_t uart_in_buffer[UART_IN_BUFFER_SIZE];
 volatile uint8_t uart_in_buffer_read = 0;
@@ -25,6 +26,11 @@ volatile uint8_t uart_previous_pin = 0;
 
 uint8_t uart_timer_period;
 uint8_t uart_timer_period_half;
+
+uint8_t uart_data_bits;
+uint8_t uart_data_and_parity_bits;
+uint8_t uart_total_bits;
+uint8_t uart_parity;
 
 ISR(UART_RXD_PCINT_vect) {
 	
@@ -87,11 +93,12 @@ ISR(UART_TXD_COMP_vect) {
 	
 	// Is it the first bit? If so, fetch the byte to transmit.
 	if (uart_data_out_counter == 0) {
-		uart_data_out = ~uart_out_buffer[uart_out_buffer_read];
+		uart_data_out = uart_out_buffer[uart_out_buffer_read] ^ (0xFF >> (8 - uart_data_bits));
 		if (++uart_out_buffer_read == UART_OUT_BUFFER_SIZE) {
 			uart_out_buffer_read = 0;
 		}
 		--uart_out_buffer_count;
+		uart_data_out_parity = uart_parity;
 	}
 	
 	// Value of next bit to clock out
@@ -107,20 +114,32 @@ ISR(UART_TXD_COMP_vect) {
 		TCCR1A &= ~_BV(UART_TXD_COM0);
 		#endif
 		#ifdef TCCR1
-		TCCR1 &= ~_BV(UART_TXD_COM0);
+		TCCR1 |= _BV(UART_TXD_COM0);
 		#endif
+		++uart_data_out_parity;
 	}
 	
 	// Check end of byte
-	if (uart_data_out_counter >= 9) {
+	if (uart_data_out_counter <= uart_data_and_parity_bits) {
+		// Advance to next bit
+		uart_data_out >>= 1;
+		++uart_data_out_counter;
+		// If we've reached the last bit and have parity enabled, 
+		if (uart_parity && uart_data_out_counter == uart_data_bits && (uart_data_out_parity & 1)) {
+			uart_data_out |= 1;
+		}
+	} else {
 		if (uart_out_buffer_count == 0) {
-			if (uart_data_out_counter >= 10) {
+			if (uart_data_out_counter > uart_total_bits) {
 				// Buffer is empty and we've finished sending the stop bit, so disable interrupts
 				TIMSK &= ~_BV(UART_TXD_OCIE);
 			} else {
 				// Pad out the final stop bit to ensure gaps between bytes
 				++uart_data_out_counter;
 			}
+		} else if (uart_data_out_counter < uart_total_bits) {
+			// Still more in the buffer, but we're working on the stop bit
+			++uart_data_out_counter;
 		} else {
 			// Still more in the buffer, so prepare the next iteration
 			uart_data_out_counter = 0;
@@ -132,10 +151,6 @@ ISR(UART_TXD_COMP_vect) {
 			#endif
 			
 		}
-	} else {
-		// Advance to next bit
-		uart_data_out >>= 1;
-		++uart_data_out_counter;
 	}
 }
 
@@ -145,6 +160,7 @@ void uart_write_byte(uint8_t value) {
 	while (uart_out_buffer_count >= UART_OUT_BUFFER_SIZE);
 	
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		
 		// Enqueue the byte to send
 		uart_out_buffer[uart_out_buffer_write] = value;
 		if (++uart_out_buffer_write == UART_OUT_BUFFER_SIZE) {
@@ -192,7 +208,7 @@ bool uart_read_byte(uint8_t *value) {
 	return read;
 }
 
-void uart_init(uint16_t baud) {
+void uart_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits) {
 	
 	// Calculate the timer settings based on the baud rate
 	uint32_t period = (uint32_t)F_CPU / baud;
@@ -208,6 +224,14 @@ void uart_init(uint16_t baud) {
 	
 	uart_timer_period = (uint8_t)(period - 1);
 	uart_timer_period_half = (uart_timer_period / 2) - UART_TIMER_SETUP_CYCLES; // TODO: Fix fudge factor
+	
+	// Set the number of data bits, parity and stop bits
+	uart_data_bits = data_bits;
+	uart_data_and_parity_bits = data_bits;
+	if ((uart_parity = parity) != UART_PARITY_NONE) {
+		++uart_data_and_parity_bits;
+	}
+	uart_total_bits = uart_data_and_parity_bits + stop_bits;
 	
 	// Drive UART TXD as output
 	UART_DDR |= _BV(UART_TXD);
