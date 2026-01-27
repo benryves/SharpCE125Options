@@ -23,6 +23,9 @@ volatile uint8_t uart_out_buffer_count = 0;
 
 volatile uint8_t uart_previous_pin = 0;
 
+uint8_t uart_timer_period;
+uint8_t uart_timer_period_half;
+
 ISR(UART_RXD_PCINT_vect) {
 	
 	// Capture new state of the pins
@@ -36,7 +39,7 @@ ISR(UART_RXD_PCINT_vect) {
 		UART_RXD_PCINT_MSK &= ~_BV(UART_RXD_PCINT);
 		
 		// Get Timer0 running to capture the first bit
-		OCR0A = (UART_TIMER_CYCLES / 2) - UART_TIMER_SETUP_CYCLES - 1;
+		OCR0A = uart_timer_period_half;
 		TCNT0 = 0;
 		TIFR = _BV(OCF0A);
 		TIMSK |= _BV(OCIE0A);
@@ -49,7 +52,7 @@ ISR(UART_RXD_PCINT_vect) {
 ISR(TIMER0_COMPA_vect) {
 	// We're now half a bit into receiving the data
 	TIMSK &= ~_BV(OCIE0A);
-	OCR0A = UART_TIMER_CYCLES - 1;
+	OCR0A = uart_timer_period;
 	TCNT0 = 0;
 	USICR = _BV(USIOIE) | _BV(USICS0);
 	USISR = _BV(USIOIF) | (8 << USICNT0);
@@ -168,7 +171,7 @@ void uart_write_byte(uint8_t value) {
 			TIMSK |= _BV(UART_TXD_OCIE);
 			
 			// Trigger the interrupt
-			TCNT1 = UART_TIMER_CYCLES - 2;
+			TCNT1 = uart_timer_period - 1;
 		}
 	}
 	
@@ -189,14 +192,29 @@ bool uart_read_byte(uint8_t *value) {
 	return read;
 }
 
-void uart_init(void) {
+void uart_init(uint16_t baud) {
+	
+	// Calculate the timer settings based on the baud rate
+	uint32_t period = (uint32_t)F_CPU / baud;
+	uint8_t prescaler = 1;
+	
+	while (period > 256 && prescaler < 5) {
+		period >>= 2;
+		if (prescaler < 3) {
+			period >>= 1;
+		}
+		++prescaler;
+	}
+	
+	uart_timer_period = (uint8_t)(period - 1);
+	uart_timer_period_half = (uart_timer_period / 2) - UART_TIMER_SETUP_CYCLES; // TODO: Fix fudge factor
 	
 	// Drive UART TXD as output
 	UART_DDR |= _BV(UART_TXD);
 	
 	// Configure Timer0 as the UART receiver clock
 	TCCR0A = (2 << WGM00);
-	TCCR0B = (UART_TIMER0_CLOCKSEL << CS00);
+	TCCR0B = (prescaler << CS00);
 	#ifdef PSR0
 	GTCCR |= _BV(PSR0);
 	#endif
@@ -206,15 +224,15 @@ void uart_init(void) {
 	TCCR1A = _BV(UART_TXD_COM1);
 	#endif
 	#ifdef TCCR1B
-	TCCR1B = _BV(WGM12) | (UART_TIMER1_CLOCKSEL << CS10);
+	TCCR1B = _BV(WGM12) | (prescaler << CS10);
 	#endif
 	#ifdef TCCR1
 	TCCR1 = _BV(CTC1) | _BV(UART_TXD_COM1) | (UART_TIMER1_CLOCKSEL << CS10);
 	#endif
 	
-	OCR1A = UART_TIMER_CYCLES - 1;
+	OCR1A = uart_timer_period;
 	#ifdef OCR1C
-	OCR1C = UART_TIMER_CYCLES - 1;
+	OCR1C = uart_timer_period;
 	#endif
 	
 	#ifdef PSR10
