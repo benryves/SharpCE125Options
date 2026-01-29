@@ -7,7 +7,7 @@
 #include <avr/io.h>
 
 #define UART_RXD (5)
-#define UART_TXD (4)
+#define UART_TXD (3)
 #define UART_PIN (PINB)
 #define UART_PORT (PORTB)
 #define UART_DDR (DDRB)
@@ -25,12 +25,12 @@
 #define UART_USI_OVERFLOW_vect (USI_OVERFLOW_vect)
 #endif
 
-#define UART_TXD_COM0 (COM1B0)
-#define UART_TXD_COM1 (COM1B1)
+#define UART_TXD_COM0 (COM1A0)
+#define UART_TXD_COM1 (COM1A1)
 
-#define UART_TXD_COMP_vect (TIMER1_COMPB_vect)
-#define UART_TXD_OCIE (OCIE1B)
-#define UART_TXD_OCF (OCF1B)
+#define UART_TXD_COMP_vect (TIMER1_COMPA_vect)
+#define UART_TXD_OCIE (OCIE1A)
+#define UART_TXD_OCF (OCF1A)
 
 #define UART_TIMER_CYCLES (F_CPU / UART_BAUD_RATE / UART_TIMER_PRESCALER)
 #define UART_TIMER_SETUP_CYCLES (10)
@@ -46,5 +46,8 @@ void uart_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bi
 
 void uart_write_byte(uint8_t value);
 bool uart_read_byte(uint8_t *value);
+
+void uart_empty_write_buffer(void);
+void uart_empty_read_buffer(void);
 
 #endif
