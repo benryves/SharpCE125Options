@@ -6,11 +6,17 @@
 
 #include <avr/io.h>
 
+#define UART_DCD (7)
+#define UART_DSR (6)
 #define UART_RXD (5)
+#define UART_RTS (4)
 #define UART_TXD (3)
-#define UART_PIN (PINB)
+#define UART_CTS (2)
+#define UART_DTR (1)
+#define UART_RI  (0)
+#define UART_PIN  (PINB)
 #define UART_PORT (PORTB)
-#define UART_DDR (DDRB)
+#define UART_DDR  (DDRB)
 
 #define UART_RXD_PCINT (PCINT5)
 #define UART_RXD_PCINT_vect (PCINT0_vect)

@@ -291,8 +291,10 @@ void uart_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bi
 	}
 	uart_total_bits = uart_data_and_parity_bits + stop_bits;
 	
-	// Drive UART TXD as output
-	UART_DDR |= _BV(UART_TXD);
+	// Drive UART outputs
+	UART_PORT &= ~(_BV(UART_TXD) | _BV(UART_DTR) | _BV(UART_RTS));
+	UART_PORT |= _BV(UART_DCD) | _BV(UART_DSR) | _BV(UART_RI);
+	UART_DDR |= _BV(UART_TXD) | _BV(UART_DTR) | _BV(UART_RTS);
 	
 	// Configure Timer0 as the UART receiver clock
 	TCCR0A = (2 << WGM00);

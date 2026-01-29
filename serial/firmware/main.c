@@ -191,11 +191,28 @@ timeout:;
 }
 
 void sharp_ce125_option_outstat(uint8_t value) {
-	
+	if (value & _BV(0)) {
+		UART_PORT &= ~_BV(UART_DTR);
+	} else {
+		UART_PORT |= _BV(UART_DTR);
+	}
+	if (value & _BV(1)) {
+		UART_PORT &= ~_BV(UART_RTS);
+	} else {
+		UART_PORT |= _BV(UART_RTS);
+	}
 }
 
 uint8_t sharp_ce125_option_instat(void) {
-	return 123;
+	uint8_t result = 0;
+	uint8_t uart_state = ~UART_PIN;
+	if (uart_state & _BV(UART_DTR)) result |= _BV(0);
+	if (uart_state & _BV(UART_RTS)) result |= _BV(1);
+	if (uart_state & _BV(UART_CTS)) result |= _BV(2);
+	if (uart_state & _BV(UART_DCD)) result |= _BV(3);
+	if (uart_state & _BV(UART_DSR)) result |= _BV(4);
+	if (uart_state & _BV(UART_RI)) result |= _BV(5);
+	return result;
 }
 
 void sharp_ce125_option_setcom(uint8_t mode, uint8_t devices) {
