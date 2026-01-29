@@ -117,6 +117,8 @@ void sharp_ce125_option_acl(void) {
 	sharp_ce125_option_receive_buffer_count = 0;
 	sharp_ce125_option_receive_mode = 0;
 	sharp_ce125_option_send_mode = 0;
+	uart_empty_read_buffer();
+	uart_empty_write_buffer();
 }
 
 void debug_hex_nybble(uint8_t value) {

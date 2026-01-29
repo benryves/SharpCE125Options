@@ -235,6 +235,14 @@ void uart_write_byte(uint8_t value) {
 	
 }
 
+void uart_empty_write_buffer(void) {
+	if (uart_out_buffer_count > 0) {
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+			uart_out_buffer_count = uart_out_buffer_read = uart_out_buffer_write = 0;
+		}
+	}
+}
+
 bool uart_read_byte(uint8_t *value) {
 	bool read = false;
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
@@ -248,6 +256,14 @@ bool uart_read_byte(uint8_t *value) {
 		}
 	}
 	return read;
+}
+
+void uart_empty_read_buffer(void) {
+	if (uart_in_buffer_count > 0) {
+		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+			uart_in_buffer_count = uart_in_buffer_read = uart_in_buffer_write = 0;
+		}
+	}
 }
 
 void uart_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits) {
