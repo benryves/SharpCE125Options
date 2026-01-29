@@ -12,6 +12,9 @@ volatile uint8_t uart_data_out = 0;
 volatile uint8_t uart_data_out_counter = 0;
 volatile uint8_t uart_data_out_parity = 0;
 
+volatile uint8_t uart_data_in = 0;
+volatile bool uart_data_in_get_parity = false;
+
 volatile uint8_t uart_in_buffer[UART_IN_BUFFER_SIZE];
 volatile uint8_t uart_in_buffer_read = 0;
 volatile uint8_t uart_in_buffer_write = 0;
@@ -61,32 +64,71 @@ ISR(TIMER0_COMPA_vect) {
 	OCR0A = uart_timer_period;
 	TCNT0 = 0;
 	USICR = _BV(USIOIE) | _BV(USICS0);
-	USISR = _BV(USIOIF) | (8 << USICNT0);
+	USISR = _BV(USIOIF) | ((16 - uart_data_bits) << USICNT0);
+	uart_data_in_get_parity = uart_parity != UART_PARITY_NONE;
 }
 
 ISR(USI_OVERFLOW_vect) {
 	
-	// Capture USI data and disable USI
+	// Capture USI data
 	uint8_t value = USIBR;
-	USICR = 0;
 	
-	// Invert and store
-	if (uart_in_buffer_count < UART_IN_BUFFER_SIZE) {
+	// Are we waiting for parity?
+	if (uart_data_in_get_parity) {
+		
+		// Get the parity bit
+		uart_data_in = value;
+		USISR = _BV(USIOIF) | (15 << USICNT0);
+		uart_data_in_get_parity = false;
+		
+	} else {
+		
+		// Switch off the USI
+		USICR = 0;
+		
+		// We either just got the parity bit, or didn't need one.
+		bool parity;
+		if (uart_parity == UART_PARITY_NONE) {
+			parity = true;
+		} else {
+			parity = value & 1;
+			value = uart_data_in;
+		}
+		
 		// Swap bit order
 		value = (value & 0xF0) >> 4 | (value & 0x0F) << 4;
 		value = (value & 0xCC) >> 2 | (value & 0x33) << 2;
 		value = (value & 0xAA) >> 1 | (value & 0x55) << 1;
-		uart_in_buffer[uart_in_buffer_write] = ~value;
-		if (++uart_in_buffer_write == UART_IN_BUFFER_SIZE) {
-			uart_in_buffer_write = 0;
+		
+		// Invert and align
+		value = ~value >> (8 - uart_data_bits);
+		
+		// Check parity
+		if (uart_parity) {
+			uint8_t parity_calc = uart_parity;
+			uint8_t parity_data = value;
+			uint8_t parity_len = uart_data_bits;
+			while (parity_len -- > 0) {
+				parity_calc += parity_data & 1;
+				parity_data >>= 1;
+			}
+			parity = (parity_calc & 1) == parity;
 		}
-		++uart_in_buffer_count;
+		
+		// Invert and store
+		if (parity && (uart_in_buffer_count < UART_IN_BUFFER_SIZE)) {
+			uart_in_buffer[uart_in_buffer_write] = value;
+			if (++uart_in_buffer_write == UART_IN_BUFFER_SIZE) {
+				uart_in_buffer_write = 0;
+			}
+			++uart_in_buffer_count;
+		}
+		
+		// Re-enable pin change interrupts to capture next byte
+		GIFR |= _BV(UART_RXD_PCINT_IF);
+		UART_RXD_PCINT_MSK |= _BV(UART_RXD_PCINT);
+		uart_previous_pin = UART_PIN;
 	}
-	
-	// Re-enable pin change interrupts to capture next byte
-	GIFR |= _BV(UART_RXD_PCINT_IF);
-	UART_RXD_PCINT_MSK |= _BV(UART_RXD_PCINT);
-	uart_previous_pin = UART_PIN;
 }
 
 ISR(UART_TXD_COMP_vect) {
