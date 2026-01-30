@@ -8,6 +8,8 @@
 
 #include "uart.h"
 
+uint16_t uart_baud = 0;
+
 volatile uint8_t uart_data_out = 0;
 volatile uint8_t uart_data_out_counter = 0;
 volatile uint8_t uart_data_out_parity = 0;
@@ -282,6 +284,7 @@ void uart_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bi
 	
 	uart_timer_period = (uint8_t)(period - 1);
 	uart_timer_period_half = (uart_timer_period / 2) - UART_TIMER_SETUP_CYCLES; // TODO: Fix fudge factor
+	uart_baud = baud;
 	
 	// Set the number of data bits, parity and stop bits
 	uart_data_bits = data_bits;
@@ -327,4 +330,11 @@ void uart_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bi
 	uart_previous_pin = UART_PIN;
 	UART_RXD_PCINT_MSK |= _BV(UART_RXD_PCINT);
 	GIMSK |= _BV(UART_RXD_PCINT_IE);
+}
+
+void uart_get_settings(uint16_t *baud, uint8_t *data_bits, uint8_t *parity, uint8_t *stop_bits) {
+	if (baud) *baud = uart_baud;
+	if (data_bits) *data_bits = uart_data_bits;
+	if (parity) *parity = uart_parity;
+	if (stop_bits) *stop_bits = uart_total_bits - uart_data_and_parity_bits;
 }

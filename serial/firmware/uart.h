@@ -49,6 +49,7 @@
 #define UART_PARITY_ODD  (2)
 
 void uart_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits);
+void uart_get_settings(uint16_t *baud, uint8_t *data_bits, uint8_t *parity, uint8_t *stop_bits);
 
 void uart_write_byte(uint8_t value);
 bool uart_read_byte(uint8_t *value);
