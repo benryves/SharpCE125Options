@@ -36,20 +36,19 @@ extern uint8_t sharp_send_mode;
 void sharp_init(void);
 void sharp_update(void);
 
-bool sharp_send_byte(uint8_t value);
-void sharp_return_byte(uint8_t value);
-
 bool sharp_char_to_token(char c, uint8_t *token);
 bool sharp_token_to_char(uint8_t token, char *c);
 
-extern void sharp_outstat(uint8_t value);
-extern uint8_t sharp_instat(void);
-extern void sharp_setcom(uint8_t mode, uint8_t devices);
-extern void sharp_comstring(void);
+extern void sharp_serial_outstat(uint8_t value);
+extern uint8_t sharp_serial_instat(void);
+extern void sharp_serial_setcom(uint8_t mode, uint8_t devices);
+extern void sharp_serial_comstring(bool (*ret)(uint8_t));
 
-extern void sharp_print(uint8_t token);
+extern void sharp_serial_data_out(uint8_t mode, uint8_t value);
+extern bool sharp_serial_data_in(uint8_t mode, uint8_t *value);
 
-extern void sharp_data_out(uint8_t value);
+extern bool sharp_key_in(uint8_t *value);
 
+extern bool sharp_rom(bool (*ret)(uint8_t));
 
 #endif

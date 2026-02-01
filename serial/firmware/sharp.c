@@ -143,7 +143,7 @@ void sharp_received_byte(uint8_t value) {
 			sharp_receive_buffer[sharp_receive_buffer_count++] = value;
 			if (sharp_receive_buffer_count > 2) {
 				if (value == 0x0D) {
-					sharp_setcom(sharp_receive_buffer[0], sharp_receive_buffer[1]);
+					sharp_serial_setcom(sharp_receive_buffer[0], sharp_receive_buffer[1]);
 				}
 				sharp_acl();
 			}
@@ -152,7 +152,7 @@ void sharp_received_byte(uint8_t value) {
 			sharp_receive_buffer[sharp_receive_buffer_count++] = value;
 			if (sharp_receive_buffer_count > 1) {
 				if (value == 0x0D) {
-					sharp_outstat(sharp_receive_buffer[0]);
+					sharp_serial_outstat(sharp_receive_buffer[0]);
 				}
 			}
 			break;
@@ -165,7 +165,7 @@ void sharp_received_byte(uint8_t value) {
 				case SHARP_CMD_PRINT:
 				case SHARP_CMD_LPRINT:
 					// Output to printer
-					sharp_print(value);
+					sharp_serial_data_out(sharp_receive_mode, value);
 					if (value == 0x0D) {
 						sharp_acl();
 					}
@@ -176,11 +176,11 @@ void sharp_received_byte(uint8_t value) {
 						sharp_acl();
 					} else {
 						if (value == 0x03) {
-							sharp_print(0x0D);
+							sharp_serial_data_out(sharp_receive_mode, 0x0D);
 							sharp_llist_column_count = 0;
 						} else {
 							if (value != 0x11 || sharp_llist_column_count < 24 || sharp_llist_column_count > 27) {
-								sharp_print(value);
+								sharp_serial_data_out(sharp_receive_mode, value);
 							}
 							if (++sharp_llist_column_count == 48) {
 								sharp_llist_column_count = 24;
@@ -190,7 +190,7 @@ void sharp_received_byte(uint8_t value) {
 					break;
 				case SHARP_CMD_CSAVE:
 					// Send raw program to the serial port
-					sharp_data_out(value);
+					sharp_serial_data_out(sharp_receive_mode, value);
 					if (value == 0x0D) {
 						sharp_acl();
 					}
@@ -198,7 +198,7 @@ void sharp_received_byte(uint8_t value) {
 				case SHARP_CMD_PRINTFILE:
 					switch (sharp_data_header_count) {
 						case 0: // MSB of size
-							sharp_data_out(value);
+							sharp_serial_data_out(sharp_receive_mode, value);
 							// Was this the end of the transmission?
 							if (value == 0x0D && sharp_data_size != 0) {
 								sharp_acl();
@@ -211,7 +211,7 @@ void sharp_received_byte(uint8_t value) {
 							sharp_data_size |= value;
 							sharp_data_count = 0;
 							++sharp_data_header_count;
-							sharp_data_out(value);
+							sharp_serial_data_out(sharp_receive_mode, value);
 
 							// We should expect at least three more bytes now
 							if (sharp_data_size < 3) {
@@ -224,7 +224,7 @@ void sharp_received_byte(uint8_t value) {
 							++sharp_data_header_count;
 						default:
 							// Send the data
-							sharp_data_out(value);
+							sharp_serial_data_out(sharp_receive_mode, value);
 							++sharp_data_count;
 
 							// Is that the end of the variable?
@@ -252,7 +252,7 @@ void sharp_received_byte(uint8_t value) {
 		default:
 			switch (value) {
 				case SHARP_CMD_COMSTRING:
-					sharp_comstring();
+					sharp_serial_comstring(&sharp_send_byte);
 					sharp_send_byte(0x0D);
 					break;
 				case SHARP_CMD_KEYONOFF:
@@ -274,7 +274,7 @@ void sharp_received_byte(uint8_t value) {
 					sharp_receive_mode = value;
 					break;
 				case SHARP_CMD_INSTAT:
-					if (sharp_send_byte(sharp_instat())) {
+					if (sharp_send_byte(sharp_serial_instat())) {
 						sharp_send_byte(0x0D);
 					}
 					break;
@@ -287,117 +287,28 @@ void sharp_received_byte(uint8_t value) {
 					sharp_data_size = 0;
 					sharp_send_mode = value;
 					break;
-				/*case SHARP_CMD_ROM:
+				case SHARP_CMD_ROM:
 					{
 						// Reset the sharp_checksum
 						sharp_reset_checksum();
-
-						// Send the program data
-						for (size_t i = 0; i < sizeof(program); ++i) {
-							if (!sharp_send_byte_with_checksum(pgm_read_byte(&program[i]))) goto send_done;
+						
+						// Send the ROM program data
+						if (sharp_rom(sharp_send_byte_with_checksum)) {
+							// Send 8 terminating bytes
+							for (uint8_t i = 0; i < 8; ++i) {
+								if (!sharp_send_byte_with_checksum(0xFF)) goto send_done;
+							}
+							sharp_send_byte(0x0D); // End of transmission
 						}
-
-						// Send 8 terminating bytes
-						for (uint8_t i = 0; i < 8; ++i) {
-							if (!sharp_send_byte_with_checksum(0xFF)) goto send_done;
-						}
-						sharp_send_byte(0x0D); // End of transmission
 					send_done:;
 					}
-					break;*/
+					break;
 				default:
 					sharp_acl();
 					break;
 			}
 			break;
 	}
-}
-
-void sharp_return_byte(uint8_t value) {
-	switch (sharp_send_mode) {
-		case SHARP_CMD_INPUT:
-		case SHARP_CMD_KEYGET:
-			if (sharp_send_byte(value)) {
-				sharp_send_byte(0x0D);
-			}
-			sharp_send_mode = 0;
-			break;
-		case SHARP_CMD_INPUTFILE:
-			// Send data with checksum
-			if (sharp_data_header_count == 0) {
-				sharp_reset_checksum();
-				sharp_checksum_count = 3;
-				sharp_checksum_reset = 8;
-			}
-			if (!sharp_send_byte_with_checksum(value)) {
-				sharp_acl();
-			} else {
-				switch (sharp_data_header_count) {
-					case 0: // MSB of size
-						// Was this the end of the transmission?
-						if (value == 0x0D && sharp_data_size != 0) {
-							sharp_acl();
-						} else {
-							sharp_data_size = value << 8;
-							++sharp_data_header_count;
-						}
-						break;
-					case 1: // LSB of size
-						sharp_data_size |= value;
-						sharp_data_count = 0;
-						++sharp_data_header_count;
-						
-						// We should expect at least three more bytes now
-						if (sharp_data_size < 3) {
-							sharp_data_header_count = 0;
-							sharp_acl();
-						}
-						break;
-					case 2: // Row upper bound
-					case 3: // Column upper bound
-					case 4: // Element size
-						++sharp_data_header_count;
-					default:
-						// We sent the data
-						++sharp_data_count;
-
-						// Is that the end of the variable?
-						if (sharp_data_size == 0xFE00) {
-							// 8-byte variables - INPUT#, INPUT# V
-							if (((sharp_data_count & 7) == 4) && (value == 0x0F)) {
-								// Reset for next variable
-								sharp_data_header_count = 0;
-							}
-						} else {
-							// Array variables - INPUT# V(*)
-							if (sharp_data_count >= sharp_data_size) {
-								// Reset for next variable
-								sharp_data_header_count = 0;
-							}
-						}
-						break;
-				}
-			}
-			break;
-		case SHARP_CMD_CLOAD:
-			// Send checksummed data
-			if (value == 0x0D) {
-				// Send terminator
-				for (uint8_t i = 0; i < 8; ++i) {
-					if (!sharp_send_byte_with_checksum(0xFF)) goto send_done;
-				}
-				sharp_send_byte(0x0D); // End of transmission
-			send_done:;
-				sharp_send_mode = 0;
-			} else {
-				// Send single byte
-				if (!sharp_send_byte_with_checksum(value)) {
-					sharp_send_mode = 0;
-				}
-			}
-			break;
-	}
-	
 }
 
 void sharp_update(void) {
@@ -441,6 +352,105 @@ void sharp_update(void) {
 			sharp_received_byte(sharp_byte_in);
 		}
 		
+	}
+	
+	uint8_t value;
+	
+	switch (sharp_send_mode) {
+		case SHARP_CMD_INPUT:
+			if (sharp_serial_data_in(sharp_send_mode, &value)) {
+				if (sharp_send_byte(value)) {
+					sharp_send_byte(0x0D);
+				}
+				sharp_send_mode = 0;
+			}
+			break;
+		case SHARP_CMD_KEYGET:
+			if (sharp_key_in(&value)) {
+				if (sharp_send_byte(value)) {
+					sharp_send_byte(0x0D);
+				}
+				sharp_send_mode = 0;
+			}
+			break;
+		case SHARP_CMD_INPUTFILE:
+			// Send data with checksum
+			if (sharp_serial_data_in(sharp_send_mode, &value)) {
+				if (sharp_data_header_count == 0) {
+					sharp_reset_checksum();
+					sharp_checksum_count = 3;
+					sharp_checksum_reset = 8;
+				}
+				if (!sharp_send_byte_with_checksum(value)) {
+					sharp_acl();
+				} else {
+					switch (sharp_data_header_count) {
+						case 0: // MSB of size
+							// Was this the end of the transmission?
+							if (value == 0x0D && sharp_data_size != 0) {
+								sharp_acl();
+							} else {
+								sharp_data_size = value << 8;
+								++sharp_data_header_count;
+							}
+							break;
+						case 1: // LSB of size
+							sharp_data_size |= value;
+							sharp_data_count = 0;
+							++sharp_data_header_count;
+							
+							// We should expect at least three more bytes now
+							if (sharp_data_size < 3) {
+								sharp_data_header_count = 0;
+								sharp_acl();
+							}
+							break;
+						case 2: // Row upper bound
+						case 3: // Column upper bound
+						case 4: // Element size
+							++sharp_data_header_count;
+						default:
+							// We sent the data
+							++sharp_data_count;
+
+							// Is that the end of the variable?
+							if (sharp_data_size == 0xFE00) {
+								// 8-byte variables - INPUT#, INPUT# V
+								if (((sharp_data_count & 7) == 4) && (value == 0x0F)) {
+									// Reset for next variable
+									sharp_data_header_count = 0;
+								}
+							} else {
+								// Array variables - INPUT# V(*)
+								if (sharp_data_count >= sharp_data_size) {
+									// Reset for next variable
+									sharp_data_header_count = 0;
+								}
+							}
+							break;
+					}
+				}
+			}
+			break;
+		case SHARP_CMD_CLOAD:
+			// Send checksummed data
+			if (sharp_serial_data_in(sharp_send_mode, &value)) {
+				if (value == 0x0D) {
+					// Send terminator
+					for (uint8_t i = 0; i < 8; ++i) {
+						if (!sharp_send_byte_with_checksum(0xFF)) goto send_done;
+					}
+					sharp_send_byte(0x0D); // End of transmission
+				send_done:;
+					sharp_send_mode = 0;
+				} else {
+					// Send single byte
+					if (!sharp_send_byte_with_checksum(value)) {
+						sharp_send_mode = 0;
+					}
+				}
+			}
+			break;
 	}
 	
 }
