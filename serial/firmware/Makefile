@@ -36,7 +36,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 COMPILE = $(CC) $(INCLUDES) $(CFLAGS)
 
-OBJECTS = main.o uart.o
+OBJECTS = main.o sharp.o uart.o
 
 ## Build
 all: $(TARGET) $(PROJECT).elf $(PROJECT).hex size
