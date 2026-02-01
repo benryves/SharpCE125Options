@@ -496,7 +496,7 @@ bool sharp_char_to_token(char c, uint8_t *token) {
 		*token = 0x4D;
 		return true;
 	} else if (c < 0x20) {
-		return true;
+		return false;
 	} else {
 		c -= 0x20;
 		if (c >= 0 && c < sizeof(ascii_to_token_table)) {
