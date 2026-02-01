@@ -273,9 +273,13 @@ void sharp_received_byte(uint8_t value) {
 					sharp_data_size = 0;
 					sharp_send_mode = value;
 					sharp_serial_data_begin(sharp_receive_mode);
+					wdt_reset();
+					sharp_timeout = false;
 					break;
 				case SHARP_CMD_KEYGET:
 					sharp_send_mode = value;
+					wdt_reset();
+					sharp_timeout = false;
 					break;
 				case SHARP_CMD_ROM:
 					{
@@ -348,17 +352,21 @@ void sharp_update(void) {
 	
 	switch (sharp_send_mode) {
 		case SHARP_CMD_INPUT:
-			if (sharp_serial_data_in(sharp_send_mode, &value)) {
+			if (sharp_serial_data_in(sharp_send_mode, &value) || ((value = 0xFF) && sharp_timeout)) {
 				if (sharp_send_byte(value)) {
 					sharp_send_byte(0x0D);
+					wdt_reset();
+					sharp_timeout = false;
 				}
 				sharp_send_mode = 0;
 			}
 			break;
 		case SHARP_CMD_KEYGET:
-			if (sharp_key_in(&value)) {
+			if (sharp_key_in(&value) || ((value = 0xFF) && sharp_timeout)) {
 				if (sharp_send_byte(value)) {
 					sharp_send_byte(0x0D);
+					wdt_reset();
+					sharp_timeout = false;
 				}
 				sharp_send_mode = 0;
 			}
