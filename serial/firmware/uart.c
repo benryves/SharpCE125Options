@@ -268,6 +268,14 @@ void uart_empty_read_buffer(void) {
 	}
 }
 
+bool uart_is_busy(void) {
+	bool busy = false;
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		busy = !(TIMSK & _BV(OCIE0A)) || (TIMSK & _BV(UART_TXD_OCIE));
+	}
+	return busy;
+}
+
 void uart_init(uint16_t baud, uint8_t data_bits, uint8_t parity, uint8_t stop_bits) {
 	
 	// Calculate the timer settings based on the baud rate

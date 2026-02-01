@@ -42,7 +42,7 @@
 #define UART_TIMER_SETUP_CYCLES (10)
 
 #define UART_IN_BUFFER_SIZE (32)
-#define UART_OUT_BUFFER_SIZE (32)
+#define UART_OUT_BUFFER_SIZE (1)
 
 #define UART_PARITY_NONE (0)
 #define UART_PARITY_EVEN (1)
@@ -56,5 +56,7 @@ bool uart_read_byte(uint8_t *value);
 
 void uart_empty_write_buffer(void);
 void uart_empty_read_buffer(void);
+
+bool uart_is_busy(void);
 
 #endif
