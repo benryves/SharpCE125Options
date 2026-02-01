@@ -13,6 +13,8 @@
 
 const char rom[] PROGMEM = { };
 
+uint8_t last_outstat = 3;
+
 void sharp_serial_outstat(uint8_t value) {
 	if (value & _BV(0)) {
 		UART_PORT &= ~_BV(UART_DTR);
@@ -24,6 +26,7 @@ void sharp_serial_outstat(uint8_t value) {
 	} else {
 		UART_PORT |= _BV(UART_RTS);
 	}
+	last_outstat = value;
 }
 
 uint8_t sharp_serial_instat(void) {
@@ -215,6 +218,7 @@ void sharp_serial_data_begin(uint8_t mode) {
 
 void sharp_serial_data_end(uint8_t mode) {
 	while (uart_is_busy() && !(SHARP_PIN & _BV(SHARP_ACL)));
+	sharp_serial_outstat(last_outstat);
 }
 
 

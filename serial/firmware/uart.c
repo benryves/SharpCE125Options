@@ -22,6 +22,9 @@ volatile uint8_t uart_in_buffer_read = 0;
 volatile uint8_t uart_in_buffer_write = 0;
 volatile uint8_t uart_in_buffer_count = 0;
 
+uint8_t uart_in_buffer_rts_off_level = UART_IN_BUFFER_SIZE / 2;
+uint8_t uart_in_buffer_rts_on_level = UART_IN_BUFFER_SIZE / 4;
+
 volatile uint8_t uart_out_buffer[UART_OUT_BUFFER_SIZE];
 volatile uint8_t uart_out_buffer_read = 0;
 volatile uint8_t uart_out_buffer_write = 0;
@@ -124,6 +127,10 @@ ISR(USI_OVERFLOW_vect) {
 				uart_in_buffer_write = 0;
 			}
 			++uart_in_buffer_count;
+			// Is it time to automatically disable RTS?
+			if (uart_in_buffer_count >= uart_in_buffer_rts_off_level) {
+				UART_PORT &= ~_BV(UART_RTS);
+			}
 		}
 		
 		// Re-enable pin change interrupts to capture next byte
@@ -254,6 +261,10 @@ bool uart_read_byte(uint8_t *value) {
 				uart_in_buffer_read = 0;
 			}
 			--uart_in_buffer_count;
+			// Is it time to automatically enable RTS?
+			if (uart_in_buffer_count <= uart_in_buffer_rts_on_level) {
+				UART_PORT |= _BV(UART_RTS);
+			}
 			read = true;
 		}
 	}
