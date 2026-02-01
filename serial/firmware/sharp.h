@@ -44,8 +44,10 @@ extern uint8_t sharp_serial_instat(void);
 extern void sharp_serial_setcom(uint8_t mode, uint8_t devices);
 extern void sharp_serial_comstring(bool (*ret)(uint8_t));
 
+extern void sharp_serial_data_begin(uint8_t mode);
 extern void sharp_serial_data_out(uint8_t mode, uint8_t value);
 extern bool sharp_serial_data_in(uint8_t mode, uint8_t *value);
+extern void sharp_serial_data_end(uint8_t mode);
 
 extern bool sharp_key_in(uint8_t *value);
 

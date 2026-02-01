@@ -141,20 +141,51 @@ void sharp_serial_comstring(bool (*ret)(uint8_t)) {
 			) return;
 		}
 	}
-	
 }
+
+uint8_t llist_column_count = 0;
+uint8_t llist_column_limit = 80;
+uint8_t llist_column_indent = 4;
+
+void print(char c) {
+	uart_write_byte(c);
+	if (c == '\r') {
+		uart_write_byte('\n');
+	}
+}
+
 void sharp_serial_data_out(uint8_t mode, uint8_t value) {
+	char c;
 	switch (mode) {
 		case SHARP_CMD_PRINT:
 		case SHARP_CMD_LPRINT:
+			if (sharp_token_to_char(value, &c)) {
+				print(c);
+			}
+			break;
 		case SHARP_CMD_LLIST:
-			{
-				char c;
-				if (value == 0x0D) {
-					uart_write_byte('\r');
-					uart_write_byte('\n');
+			if (value != 0x0D) {
+				if (value == 0x00 || value == 0x03) {
+					print('\r');
+					llist_column_count = 0;
 				} else if (sharp_token_to_char(value, &c)) {
-					uart_write_byte(c);
+					// Do we need to force wrap?
+					if (llist_column_limit && llist_column_count == llist_column_limit) {
+						print('\r');
+						// Indent the new line
+						for (llist_column_count = 0; llist_column_count < llist_column_indent; ++llist_column_count) {
+							print(' ');
+						}
+					}
+					// Print the character
+					if (c != ' ' || llist_column_count < 24 || llist_column_count > 27) {
+						print(c);
+					}
+					// Count the number of printed columns
+					++llist_column_count;
+					if (!llist_column_limit && llist_column_count == 48) {
+						llist_column_count = 24;
+					}
 				}
 			}
 			break;
@@ -164,7 +195,7 @@ void sharp_serial_data_out(uint8_t mode, uint8_t value) {
 	}
 }
 
-extern bool sharp_serial_data_in(uint8_t mode, uint8_t *value) {
+bool sharp_serial_data_in(uint8_t mode, uint8_t *value) {
 	if (uart_read_byte(value)) {
 		switch (mode) {
 			case SHARP_CMD_KEYGET:
@@ -178,16 +209,24 @@ extern bool sharp_serial_data_in(uint8_t mode, uint8_t *value) {
 	return false;
 }
 
-extern bool sharp_key_in(uint8_t *value) {
+bool sharp_key_in(uint8_t *value) {
 	return sharp_serial_data_in(SHARP_CMD_KEYGET, value);
 }
 
-extern bool sharp_rom(bool (*ret)(uint8_t)) {
+bool sharp_rom(bool (*ret)(uint8_t)) {
 	for (size_t i = 0; i < sizeof(rom); ++i) {
 		if (!ret(pgm_read_byte(&rom[i]))) return false;
 	}
 	return true;
 }
+
+void sharp_serial_data_begin(uint8_t mode) {
+	llist_column_count = 0;
+}
+
+void sharp_serial_data_end(uint8_t mode) {
+}
+
 
 int main(void) {
 	

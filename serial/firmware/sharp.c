@@ -35,8 +35,14 @@ void sharp_init(void) {
 void sharp_acl(void) {
 	sharp_bits_received = 0;
 	sharp_receive_buffer_count = 0;
-	sharp_receive_mode = 0;
-	sharp_send_mode = 0;
+	if (sharp_receive_mode) {
+		sharp_serial_data_end(sharp_receive_mode);
+		sharp_receive_mode = 0;
+	}
+	if (sharp_send_mode) {
+		sharp_serial_data_end(sharp_send_mode);
+		sharp_send_mode = 0;
+	}
 }
 
 bool sharp_send_byte(uint8_t value) {
@@ -130,8 +136,6 @@ bool sharp_send_byte_with_checksum(uint8_t value) {
   return true;
 }
 
-uint8_t sharp_llist_column_count;
-
 uint8_t sharp_data_header_count = 0;
 uint16_t sharp_data_size = 0;
 uint16_t sharp_data_count = 0;
@@ -164,28 +168,11 @@ void sharp_received_byte(uint8_t value) {
 			switch (sharp_receive_mode) {
 				case SHARP_CMD_PRINT:
 				case SHARP_CMD_LPRINT:
+				case SHARP_CMD_LLIST:
 					// Output to printer
 					sharp_serial_data_out(sharp_receive_mode, value);
 					if (value == 0x0D) {
 						sharp_acl();
-					}
-					break;
-				case SHARP_CMD_LLIST:
-					// Output program listing to printer
-					if (value == 0x0D) {
-						sharp_acl();
-					} else {
-						if (value == 0x03) {
-							sharp_serial_data_out(sharp_receive_mode, 0x0D);
-							sharp_llist_column_count = 0;
-						} else {
-							if (value != 0x11 || sharp_llist_column_count < 24 || sharp_llist_column_count > 27) {
-								sharp_serial_data_out(sharp_receive_mode, value);
-							}
-							if (++sharp_llist_column_count == 48) {
-								sharp_llist_column_count = 24;
-							}
-						}
 					}
 					break;
 				case SHARP_CMD_CSAVE:
@@ -268,10 +255,10 @@ void sharp_received_byte(uint8_t value) {
 				case SHARP_CMD_LLIST:
 				case SHARP_CMD_CSAVE:
 				case SHARP_CMD_PRINTFILE:
-					sharp_llist_column_count = 0;
 					sharp_data_header_count = 0;
 					sharp_data_size = 0;
 					sharp_receive_mode = value;
+					sharp_serial_data_begin(sharp_receive_mode);
 					break;
 				case SHARP_CMD_INSTAT:
 					if (sharp_send_byte(sharp_serial_instat())) {
@@ -280,11 +267,14 @@ void sharp_received_byte(uint8_t value) {
 					break;
 				case SHARP_CMD_INPUT:
 				case SHARP_CMD_INPUTFILE:
-				case SHARP_CMD_KEYGET:
 				case SHARP_CMD_CLOAD:
 					sharp_reset_checksum();
 					sharp_data_header_count = 0;
 					sharp_data_size = 0;
+					sharp_send_mode = value;
+					sharp_serial_data_begin(sharp_receive_mode);
+					break;
+				case SHARP_CMD_KEYGET:
 					sharp_send_mode = value;
 					break;
 				case SHARP_CMD_ROM:
@@ -472,7 +462,7 @@ const char ascii_to_token_table[] PROGMEM = {
 };
 
 bool sharp_token_to_char(uint8_t token, char *c) {
-	if (token == 0) {
+	if (token == 0x00 || token == 0x03 || token == 0x0D) {
 		*c = '\r';
 		return true;
 	} else if (token > 0x10) {
@@ -490,7 +480,7 @@ bool sharp_token_to_char(uint8_t token, char *c) {
 
 bool sharp_char_to_token(char c, uint8_t *token) {
 	if (c == '\r') {
-		*token = 0;
+		*token = 0x00;
 		return true;
 	} else if (c == '~') {
 		*token = 0x4D;
