@@ -4,6 +4,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
+#include <avr/sleep.h>
 #include <avr/pgmspace.h>
 
 #include <util/delay.h>
@@ -221,6 +222,9 @@ void sharp_serial_data_end(uint8_t mode) {
 	sharp_serial_outstat(last_outstat);
 }
 
+ISR(PCINT2_vect) {
+}
+
 
 int main(void) {
 	
@@ -229,8 +233,23 @@ int main(void) {
 	
 	sei();
 	
+	PCMSK2 |= _BV(PCINT11) | _BV(PCINT12) | _BV(PCINT13) | _BV(PCINT14);
+	
 	for (;;) {
-		sharp_update();
+		if (!sharp_update()) {
+			
+			cli();
+			GIFR |= _BV(PCIF2);
+			GIMSK |= _BV(PCIE2);
+			sleep_enable();
+			sei();
+			sleep_cpu();
+			
+			sleep_disable();
+			GIMSK &= ~_BV(PCIE2);
+			GIFR |= _BV(PCIF2);
+			
+		}
 	}
 	
 }

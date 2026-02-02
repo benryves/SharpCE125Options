@@ -34,7 +34,7 @@
 extern uint8_t sharp_send_mode;
 
 void sharp_init(void);
-void sharp_update(void);
+bool sharp_update(void);
 
 bool sharp_char_to_token(char c, uint8_t *token);
 bool sharp_token_to_char(uint8_t token, char *c);

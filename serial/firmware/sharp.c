@@ -305,7 +305,9 @@ void sharp_received_byte(uint8_t value) {
 	}
 }
 
-void sharp_update(void) {
+bool sharp_update(void) {
+	
+	bool active = sharp_send_mode || sharp_receive_mode;
 	
 	if (!(SHARP_PIN & _BV(SHARP_OP2))) {
 		// Addressing some other device, not us
@@ -346,6 +348,7 @@ void sharp_update(void) {
 			sharp_received_byte(sharp_byte_in);
 		}
 		
+		active = true;
 	}
 	
 	uint8_t value;
@@ -450,6 +453,8 @@ void sharp_update(void) {
 			}
 			break;
 	}
+	
+	return active || sharp_send_mode || sharp_receive_mode;
 	
 }
 
