@@ -4,6 +4,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
+#include <avr/sleep.h>
 #include <avr/pgmspace.h>
 
 #include <util/delay.h>
@@ -26,10 +27,18 @@ ISR(WDT_OVERFLOW_vect) {
 	sharp_timeout = true;
 }
 
+ISR(SHARP_PCINT_vect) {
+}
+
 void sharp_init(void) {
+	
+	// Enable watchdog timer (handles timeouts)
 	wdt_enable(WDTO_15MS);
 	wdt_reset();
 	WDTCR |= _BV(WDIE);
+	
+	// Enable pin change interrupts (wakes from sleep)
+	SHARP_PCINT_MSK |= SHARP_PCINT_PINS;
 }
 
 void sharp_acl(void) {
@@ -307,7 +316,7 @@ void sharp_received_byte(uint8_t value) {
 
 bool sharp_update(void) {
 	
-	bool active = sharp_send_mode || sharp_receive_mode;
+	bool active = false;
 	
 	if (!(SHARP_PIN & _BV(SHARP_OP2))) {
 		// Addressing some other device, not us
@@ -456,6 +465,20 @@ bool sharp_update(void) {
 	
 	return active || sharp_send_mode || sharp_receive_mode;
 	
+}
+
+void sharp_sleep(void) {
+	cli();
+	GIFR |= _BV(SHARP_PCINT_IF);
+	GIMSK |= _BV(SHARP_PCINT_IE);
+	sleep_enable();
+	sei();
+	
+	sleep_cpu();
+	
+	sleep_disable();
+	GIMSK &= ~_BV(SHARP_PCINT_IE);
+	GIFR |= _BV(SHARP_PCINT_IF);
 }
 
 const char token_to_ascii_table[] PROGMEM = {

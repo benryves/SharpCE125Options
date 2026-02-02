@@ -15,6 +15,12 @@
 #define SHARP_PORT (PORTD)
 #define SHARP_DDR  (DDRD)
 
+#define SHARP_PCINT_PINS (_BV(PCINT11) | _BV(PCINT12) | _BV(PCINT13) | _BV(PCINT14))
+#define SHARP_PCINT_vect (PCINT2_vect)
+#define SHARP_PCINT_IF (PCIF2)
+#define SHARP_PCINT_IE (PCIE2)
+#define SHARP_PCINT_MSK (PCMSK2)
+
 #define SHARP_CMD_COMSTRING (0x2B)
 #define SHARP_CMD_KEYONOFF  (0x2E)
 #define SHARP_CMD_SETCOM    (0x70)
@@ -35,6 +41,7 @@ extern uint8_t sharp_send_mode;
 
 void sharp_init(void);
 bool sharp_update(void);
+void sharp_sleep(void);
 
 bool sharp_char_to_token(char c, uint8_t *token);
 bool sharp_token_to_char(uint8_t token, char *c);
