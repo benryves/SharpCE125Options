@@ -199,9 +199,16 @@ bool sharp_key_in(uint8_t *value) {
 	return sharp_serial_data_in(SHARP_CMD_KEYGET, value);
 }
 
+uint8_t last_serial_mode = 0;
+
 void sharp_serial_data_begin(uint8_t mode) {
 	llist_column_count = 0;
-	uart_empty_read_buffer();
+	if (mode != last_serial_mode) {
+		if (mode != SHARP_CMD_KEYGET && mode != SHARP_CMD_INPUT) {
+			uart_empty_read_buffer();
+		}
+		last_serial_mode = mode;
+	}
 	uart_empty_write_buffer();
 }
 

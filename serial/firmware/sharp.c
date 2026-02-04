@@ -44,11 +44,15 @@ void sharp_acl(void) {
 	sharp_bits_received = 0;
 	sharp_receive_buffer_count = 0;
 	if (sharp_receive_mode) {
+		#if SHARP_SUPPORT_CMD_PRINT || SHARP_SUPPORT_CMD_LPRINT || SHARP_SUPPORT_CMD_LLIST || SHARP_SUPPORT_CMD_CSAVE || SHARP_SUPPORT_CMD_PRINTFILE || SHARP_SUPPORT_CMD_INSTAT || SHARP_SUPPORT_CMD_INPUT || SHARP_SUPPORT_CMD_CLOAD || SHARP_SUPPORT_CMD_INPUTFILE
 		sharp_serial_data_end(sharp_receive_mode);
+		#endif
 		sharp_receive_mode = 0;
 	}
 	if (sharp_send_mode) {
+		#if SHARP_SUPPORT_CMD_PRINT || SHARP_SUPPORT_CMD_LPRINT || SHARP_SUPPORT_CMD_LLIST || SHARP_SUPPORT_CMD_CSAVE || SHARP_SUPPORT_CMD_PRINTFILE || SHARP_SUPPORT_CMD_INSTAT || SHARP_SUPPORT_CMD_INPUT || SHARP_SUPPORT_CMD_CLOAD || SHARP_SUPPORT_CMD_INPUTFILE
 		sharp_serial_data_end(sharp_send_mode);
+		#endif
 		sharp_send_mode = 0;
 	}
 }
@@ -336,7 +340,7 @@ void sharp_received_byte(uint8_t value) {
 					sharp_data_header_count = 0;
 					sharp_data_size = 0;
 					sharp_send_mode = value;
-					sharp_serial_data_begin(sharp_receive_mode);
+					sharp_serial_data_begin(sharp_send_mode);
 					wdt_reset();
 					sharp_timeout = false;
 					break;
@@ -344,6 +348,9 @@ void sharp_received_byte(uint8_t value) {
 				#if SHARP_SUPPORT_CMD_KEYGET
 				case SHARP_CMD_KEYGET:
 					sharp_send_mode = value;
+					#if SHARP_SUPPORT_CMD_INPUT || SHARP_SUPPORT_CMD_INPUTFILE || SHARP_SUPPORT_CMD_CLOAD
+					sharp_serial_data_begin(sharp_send_mode);
+					#endif
 					wdt_reset();
 					sharp_timeout = false;
 					break;
@@ -490,7 +497,7 @@ bool sharp_update(void) {
 					wdt_reset();
 					sharp_timeout = false;
 				}
-				sharp_send_mode = 0;
+				sharp_acl();
 			}
 			break;
 		#endif
@@ -502,7 +509,7 @@ bool sharp_update(void) {
 					wdt_reset();
 					sharp_timeout = false;
 				}
-				sharp_send_mode = 0;
+				sharp_acl();
 			}
 			break;
 		#endif
