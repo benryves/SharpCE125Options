@@ -1,7 +1,7 @@
 #ifndef UART_H
 #define UART_H
 
-#include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 
 #include <avr/io.h>

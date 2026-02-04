@@ -1,11 +1,10 @@
-#include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
-
-#include <util/delay.h>
 
 #include "sharp.h"
 #include "uart.h"
