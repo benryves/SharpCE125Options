@@ -10,8 +10,6 @@
 #include "sharp.h"
 #include "uart.h"
 
-const char rom[] PROGMEM = { };
-
 uint8_t last_outstat = 3;
 
 void sharp_serial_outstat(uint8_t value) {
@@ -200,13 +198,6 @@ bool sharp_serial_data_in(uint8_t mode, uint8_t *value) {
 
 bool sharp_key_in(uint8_t *value) {
 	return sharp_serial_data_in(SHARP_CMD_KEYGET, value);
-}
-
-bool sharp_rom(bool (*ret)(uint8_t)) {
-	for (size_t i = 0; i < sizeof(rom); ++i) {
-		if (!ret(pgm_read_byte(&rom[i]))) return false;
-	}
-	return true;
 }
 
 void sharp_serial_data_begin(uint8_t mode) {
