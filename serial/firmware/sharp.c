@@ -332,6 +332,17 @@ bool sharp_update(void) {
 		if (SHARP_PIN & _BV(SHARP_DOUT)) {
 			sharp_byte_in |= _BV(7);
 		}
+		++sharp_bits_received;
+		
+		// Are we about to receive a command byte?
+		if (sharp_bits_received == 8 && sharp_receive_mode == 0) {
+			if (sharp_byte_in == SHARP_CMD_ROM) {
+				while ((SHARP_PIN & _BV(SHARP_OP2)) && !(SHARP_PIN & _BV(SHARP_ACL))) {
+					sharp_sleep();
+				}
+				return false;
+			}
+		}
 		
 		// Drive ACK high
 		SHARP_DDR |= _BV(SHARP_ACK);
@@ -352,7 +363,7 @@ bool sharp_update(void) {
 		SHARP_DDR &= ~_BV(SHARP_ACK);
 		
 		// Have we received a full byte?
-		if (++sharp_bits_received == 8) {
+		if (sharp_bits_received == 8) {
 			sharp_bits_received = 0;
 			sharp_received_byte(sharp_byte_in);
 		}
