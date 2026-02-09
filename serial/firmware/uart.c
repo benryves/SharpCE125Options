@@ -16,6 +16,7 @@ volatile uint8_t uart_data_out_parity = 0;
 
 volatile uint8_t uart_data_in = 0;
 volatile bool uart_data_in_get_parity = false;
+volatile bool uart_data_in_receiving = false;
 
 volatile uint8_t uart_in_buffer[UART_IN_BUFFER_SIZE];
 volatile uint8_t uart_in_buffer_read = 0;
@@ -57,6 +58,9 @@ ISR(UART_RXD_PCINT_vect) {
 		TCNT0 = 0;
 		TIFR = _BV(OCF0A);
 		TIMSK |= _BV(OCIE0A);
+		
+		// Set a flag to indicate we're receiving
+		uart_data_in_receiving = true;
 	}
 	
 	// Store previous state of the pins
@@ -137,6 +141,9 @@ ISR(USI_OVERFLOW_vect) {
 		GIFR |= _BV(UART_RXD_PCINT_IF);
 		UART_RXD_PCINT_MSK |= _BV(UART_RXD_PCINT);
 		uart_previous_pin = UART_PIN;
+		
+		// Finished receiving data
+		uart_data_in_receiving = false;
 	}
 }
 
@@ -282,7 +289,7 @@ void uart_empty_read_buffer(void) {
 bool uart_is_busy(void) {
 	bool busy = false;
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		busy = !(TIMSK & _BV(OCIE0A)) || (TIMSK & _BV(UART_TXD_OCIE));
+		busy = uart_data_in_receiving || (TIMSK & _BV(UART_TXD_OCIE));
 	}
 	return busy;
 }
