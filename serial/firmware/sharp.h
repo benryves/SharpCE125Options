@@ -114,7 +114,7 @@ extern void sharp_serial_setcom(uint8_t mode, uint8_t devices);
 extern void sharp_serial_comstring(bool (*ret)(uint8_t));
 #endif
 
-#if SHARP_SUPPORT_CMD_PRINT || SHARP_SUPPORT_CMD_LPRINT || SHARP_SUPPORT_CMD_LLIST || SHARP_SUPPORT_CMD_CSAVE || SHARP_SUPPORT_CMD_PRINTFILE || SHARP_SUPPORT_CMD_INSTAT || SHARP_SUPPORT_CMD_INPUT || SHARP_SUPPORT_CMD_CLOAD || SHARP_SUPPORT_CMD_INPUTFILE
+#if SHARP_SUPPORT_CMD_PRINT || SHARP_SUPPORT_CMD_LPRINT || SHARP_SUPPORT_CMD_LLIST || SHARP_SUPPORT_CMD_CSAVE || SHARP_SUPPORT_CMD_PRINTFILE || SHARP_SUPPORT_CMD_INPUT || SHARP_SUPPORT_CMD_CLOAD || SHARP_SUPPORT_CMD_INPUTFILE
 extern void sharp_serial_data_begin(uint8_t mode);
 extern void sharp_serial_data_out(uint8_t mode, uint8_t value);
 extern bool sharp_serial_data_in(uint8_t mode, uint8_t *value);
