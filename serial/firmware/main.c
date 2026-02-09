@@ -127,7 +127,7 @@ uint8_t llist_column_indent = 4;
 void uart_write_byte_handshaking(uint8_t value) {
 	// CTS, DCD and DSR must all be high
 	while (~UART_PIN & (_BV(UART_CTS) | _BV(UART_DCD) | _BV(UART_DSR))) {
-		// Bail out of ACL signal received
+		// Bail out if ACL signal received
 		if (SHARP_PIN & _BV(SHARP_ACL)) return;
 	}
 	uart_write_byte(value);
@@ -213,7 +213,7 @@ void sharp_serial_data_begin(uint8_t mode) {
 }
 
 void sharp_serial_data_end(uint8_t mode) {
-	while (uart_is_busy() && !(SHARP_PIN & _BV(SHARP_ACL)));
+	while (uart_is_busy());
 	sharp_serial_outstat(last_outstat);
 }
 
