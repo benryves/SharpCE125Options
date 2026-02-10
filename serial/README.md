@@ -99,7 +99,7 @@ The SETCOM command is used to set this up. It first takes a list of communicatio
 
 For example,
 
-SETCOM 300,N,8,1,CI,CO
+> SETCOM 300,N,8,1,CI,CO
 
 sets the communication parameters to 300 baud, no parity, 8 data bits, 1 stop bit and enables redirection of Cassette Input and Cassette Output.
 From this point, any operations that would have normally transferred data to or from the tape cassette will instead transfer the data via the serial port using the specified communication parameters.
@@ -118,3 +118,62 @@ Individual communication parameters can be omitted (the comma will remain) in wh
 
 At least one device must be specified. To disable the serial interface, use SETCOM OFF.
 
+## BASIC programming reference
+
+### SETCOM (statement)
+
+Used to set communication parameters such as baud rate and number of data bits as well as which I/O devices should be redirected to or from the serial interface.
+
+> SETCOM 300,N,8,1,CI,CO
+
+* Baud rate: 110, 300, 1200.
+* Parity: N (None), E (Even), O (Odd).
+* Data bits: 7, 8.
+* Stop bits: 1, 2.
+* Device: KI (Keyboard Input), DO (Display Output), PO (Printer Output), CI (Cassette Input), CO (Cassette Output).
+
+Default communication parameters are 300 baud, no parity, 8 data bits and 1 stop bit.
+
+You must always specify at least one device to redirect.
+
+> SETCOM OFF
+
+Disables device redirection.
+
+### COM$
+
+Retrieves a character string that contains the last set of communication parameters and redirected devices.
+
+At power on:
+
+> 300,N,8,1
+
+After executing SETCOM 1200,E,7,1,PO:
+
+> 1200,E,7,1,PO
+
+### OUTSTAT
+
+Used to set the state of the handshaking signal lines (RTS, DTR).
+
+> OUTSTAT 0
+
+The handshaking signal lines are assigned as follows:
+
+|Value              |Item               |Symbol|In/Out|
+|:-----------------:|:------------------|:----:|:----:|
+|2<sup>5</sup> = &20|Ring Indicator     |  RI  |  In  |
+|2<sup>4</sup> = &10|Data Set Ready     |  DSR |  In  |
+|2<sup>3</sup> = &08|Carrier Detect     |  CD  |  In  |
+|2<sup>2</sup> = &04|Clear-To-Send      |  CTS |  In  |
+|2<sup>1</sup> = &02|Request-To-Send    |  RTS |  Out |
+|2<sup>0</sup> = &01|Data Terminal Ready|  DTR |  Out |
+
+* 0 bit: ON, high level, V+ at connector.
+* 1 bit: OFF, low level, V- at connector.
+
+RTS and DTR are 1 at power on, putting them in the OFF state.
+
+### INSTAT
+
+Used to get the state of the handshaking signal lines. The values returned by this have the same pin assignments as documented above for OUTSTAT.
