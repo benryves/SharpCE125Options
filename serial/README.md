@@ -90,3 +90,31 @@ The SHARP Pocket Computer does support converting its internal character values 
 |      92      |    &5C   |  \\ |  ¥  |
 |      93      |    &5D   |  \] |  π  |
 |      96      |    &60   |  `  |  𝐄  |
+
+## Principle of operation
+
+The serial interface is designed around redirecting certain operations that would normally exchange data with another device (such as the keyboard, screen, printer or cassette) to instead exchange data via the RS-232 port.
+
+The SETCOM command is used to set this up. It first takes a list of communication parameters (such as baud rate and number of data bits) and then a list of devices to redirect.
+
+For example,
+
+SETCOM 300,N,8,1,CI,CO
+
+sets the communication parameters to 300 baud, no parity, 8 data bits, 1 stop bit and enables redirection of Cassette Input and Cassette Output.
+From this point, any operations that would have normally transferred data to or from the tape cassette will instead transfer the data via the serial port using the specified communication parameters.
+
+The five devices that can be redirected are as follows:
+
+|Symbol|Value|Item           |In/Out|Affected commands|
+|:----:|:---:|:--------------|:----:|:----------------|
+|  KI  | &01 |Keyboard Input |  In  |INPUT            |
+|  DO  | &02 |Display Output |  Out |PRINT            |
+|  PO  | &04 |Printer Output |  Out |LPRINT, LLIST    |
+|  CI  | &08 |Cassette Input |  In  |CLOAD, INPUT#    |
+|  CO  | &10 |Cassette Output|  Out |CSAVE, PRINT#    |
+
+Individual communication parameters can be omitted (the comma will remain) in which case the default values will be used (300 baud, No parity, 8 data bits, 1 stop bit).
+
+At least one device must be specified. To disable the serial interface, use SETCOM OFF.
+
