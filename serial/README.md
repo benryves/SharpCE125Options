@@ -79,7 +79,7 @@ These characters are converted to and from ASCII when sent or received over the 
   * INPUT#, PRINT#
   * CLOAD, CSAVE
 
-CR (13, &0D) is used as a line/data terminator in both situations.
+`CR` (13, &0D) is used as a line/data terminator in both situations.
 
 The SHARP Pocket Computer does support converting its internal character values to and from ASCII using the ASC and CHR$ functions, however there are some differences that are noted here:
 
@@ -177,3 +177,18 @@ RTS and DTR are 1 at power on, putting them in the OFF state.
 ### INSTAT
 
 Used to get the state of the handshaking signal lines. The values returned by this have the same pin assignments as documented above for OUTSTAT.
+
+### INPUT
+
+When the KI (Keyboard Input) device has been redirected, this command reads ASCII text from the serial port into the specified variables. Data is read from the serial port until `CR` is received, and a comma is treated as a data separator.
+
+> 10 OUTSTAT 0  
+> 20 SETCOM 300,N,8,1,KI  
+> 30 INPUT "IN EXCURSION OF KI",A,B$,C  
+> 40 PRINT A;B$;C  
+> 50 END
+
+|Key operation|Display           |Serial input data              |
+|:------------|:-----------------|:------------------------------|
+|RUN `ENTER`  |IN EXCURSION OF KI|1+2, RS-232C `CR`<br>SIN30 `CR`|
+|             |3.RS-232C0.5      |                               |
