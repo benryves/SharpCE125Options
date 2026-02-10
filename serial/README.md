@@ -51,3 +51,42 @@
 |   7   |Request-To-Send    |  RTS |  Out |OFF on initial power up.         |
 |   8   |Clear-To-Send      |  CTS |  In  |OFF when a cable isn't connected.|
 |   9   |Ring Indicator     |  RI  |  In  |ON when a cable isn't connected. |
+
+The RS-232 interface is wired as DTE (data terminal equipment) which means it can be connected to devices wired as DCE (data communication equipment) such as a modem or a printer with a straight-through cable.
+To connect it to another DTE (such as directly to another different computer) you will need to use a null modem cable between the two devices.
+
+## Handshaking
+
+The interface will not transmit data unless CD, DSR and CTS are all ON.
+CD and DSR are pulled high to the ON state when a cable is not connected, so will not inhibit communication if they are missing however CTS is pulled low to the OFF state and so must be driven high.
+
+When the interface is first powered up both DTR and RTS are in the OFF state, and this will likely prevent the connected device from sending data to the interface.
+DTR and RTS can be switched to the ON state by using the OUTSTAT 0 command.
+
+The interface has a small data receive buffer and will automatically switch RTS to the OFF state when this starts to fill up.
+It will then automatically switch RTS back to the ON state once the received data has been transferred from the interface to the computer.
+
+## Character encoding
+
+Data transferred between the computer and the interface always uses the internal character encoding specific to the SHARP Pocket Computer.
+These characters are converted to and from ASCII when sent or received over the RS-232 port when used with certain commands:
+
+* **ASCII encoding:**
+  * INPUT, PRINT
+  * LPRINT, LLIST
+  * KEY
+* **SHARP Pocket Computer internal encoding:**
+  * INPUT#, PRINT#
+  * CLOAD, CSAVE
+
+CR (13, &0D) is used as a line/data terminator in both situations.
+
+The SHARP Pocket Computer does support converting its internal character values to and from ASCII using the ASC and CHR$ functions, however there are some differences that are noted here:
+
+|Code (Decimal)|Code (Hex)|ASCII|SHARP|
+|:------------:|:--------:|:---:|:---:|
+|      39      |    &27   |  '  | INS |
+|      91      |    &5B   |  \[ |  √  |
+|      92      |    &5C   |  \\ |  ¥  |
+|      93      |    &5D   |  \] |  π  |
+|      96      |    &60   |  `  |  𝐄  |
