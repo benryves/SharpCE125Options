@@ -106,13 +106,13 @@ From this point, any operations that would have normally transferred data to or 
 
 The five devices that can be redirected are as follows:
 
-|Symbol|Value|Item           |In/Out|Affected commands|
-|:----:|:---:|:--------------|:----:|:----------------|
-|  KI  | &01 |Keyboard Input |  In  |INPUT            |
-|  DO  | &02 |Display Output |  Out |PRINT            |
-|  PO  | &04 |Printer Output |  Out |LPRINT, LLIST    |
-|  CI  | &08 |Cassette Input |  In  |CLOAD, INPUT #   |
-|  CO  | &10 |Cassette Output|  Out |CSAVE, PRINT #   |
+|Symbol|Item           |In/Out|Affected commands|
+|:----:|:--------------|:----:|:----------------|
+|  KI  |Keyboard Input |  In  |INPUT            |
+|  DO  |Display Output |  Out |PRINT            |
+|  PO  |Printer Output |  Out |LPRINT, LLIST    |
+|  CI  |Cassette Input |  In  |CLOAD, INPUT #   |
+|  CO  |Cassette Output|  Out |CSAVE, PRINT #   |
 
 Individual communication parameters can be omitted (the comma will remain) in which case the default values will be used (300 baud, No parity, 8 data bits, 1 stop bit).
 
@@ -296,3 +296,36 @@ You cannot load a single element of an array.
 
 More than one starting variable can be included in the variable list.
 A `CR` terminator needs to be sent after all variables listed in the INPUT # command to end the transfer.
+
+### KEY
+
+The SHARP Pocket Computer can also accept keyboard input from the RS-232 port.
+Unlike the INPUT command this will work more generally; for example, you could use this to load a BASIC program onto the computer that was stored as an ASCII text file.
+
+> KEY ON
+
+After executing the KEY ON command the computer will constantly check for incoming key presses from the RS-232 port as well as its own keyboard.
+
+> KEY OFF
+
+The KEY OFF command tells the computer to stop check for incoming key presses from the RS-232 port.
+
+## Use with the SHARP PC-1245
+
+The SETCOM command is disabled on the SHARP PC-1245, which means it is not possible to use it to configure the communication parameters or redirect devices to the parallel port.
+
+Redirection can instead be enabled by POKEing the value of the redirected devices to address &C6B7:
+
+|Symbol|Value|Item           |In/Out|Affected commands|
+|:----:|:---:|:--------------|:----:|:----------------|
+|  KI  | &01 |Keyboard Input |  In  |INPUT            |
+|  DO  | &02 |Display Output |  Out |PRINT            |
+|  PO  | &04 |Printer Output |  Out |LPRINT, LLIST    |
+|  CI  | &08 |Cassette Input |  In  |CLOAD, INPUT #   |
+|  CO  | &10 |Cassette Output|  Out |CSAVE, PRINT #   |
+
+For example, to redirect cassette devices CI and CO:
+
+> POKE &C6B7,&08 OR &10
+
+Communication parameters and notification of the redirected devices are only sent to the serial interface when using SETCOM, so the communication parameters cannot be set with a simple POKE.
