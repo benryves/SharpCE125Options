@@ -329,3 +329,14 @@ For example, to redirect cassette devices CI and CO:
 > POKE &C6B7,&08 OR &10
 
 Communication parameters and notification of the redirected devices are only sent to the serial interface when using SETCOM, so the communication parameters cannot be set with a simple POKE.
+
+## Quirks and limitations
+
+The LPRINT and PRINT commands still assume the printer is 24 characters wide.
+Printing a single numeric values will align it inside a 24 character field; printing two values with a comma between them will align them inside 12 character fields.
+
+Program listings printed with LLIST are also affected by the 24 character limit.
+Individual lines are wrapped to avoid breaking a keyword across multiple lines; additional spaces are printed at the end of each wrapped line to advance the cursor to the next line and additional spaces are printed at the start of each wrapped line to intend them.
+The serial interface does attempt to undo this hard wrapping but it's far from perfect.
+
+Not all cassette-related commands are redirected: CLOAD M, CSAVE M and MERGE will still access the cassette instead of the serial interface.
