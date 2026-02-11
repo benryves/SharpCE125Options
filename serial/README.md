@@ -12,8 +12,8 @@
 
 * **Statements:**
   * SETCOM, OUTSTAT
-  * INPUT, INPUT#
-  * PRINT, PRINT#
+  * INPUT, INPUT #
+  * PRINT, PRINT #
   * LPRINT, LLIST
   * CLOAD, CSAVE
   * KEY
@@ -26,9 +26,9 @@
 |       |SETCOM OFF  |Resets communication parameters and device redirection.             |
 |OUTSTAT|OUTSTAT 0   |Sets status of RS-232 output signals.                               |
 |INPUT  |INPUT "A=";A|Loads the variable with ASCII data input from the RS-232 port.      |
-|INPUT# |INPUT# A    |Loads the variable with binary data input from the RS-232 port.     |
+|INPUT #|INPUT #A    |Loads the variable with binary data input from the RS-232 port.     |
 |PRINT  |PRINT 123   |Sends data through the RS-232 port in ASCII format.                 |
-|PRINT# |PRINT# A    |Sends data through the RS-232 port in binary format.                |
+|PRINT #|PRINT #A    |Sends data through the RS-232 port in binary format.                |
 |LPRINT |LPRINT 123  |Sends data through the RS-232 port in ASCII format.                 |
 |LLIST  |LLIST 10,100|Lists the program through the RS-232 port in ASCII format.          |
 |CLOAD  |CLOAD       |Loads a program from the RS-232 port in binary format.              |
@@ -76,7 +76,7 @@ These characters are converted to and from ASCII when sent or received over the 
   * LPRINT, LLIST
   * KEY
 * **SHARP Pocket Computer internal encoding:**
-  * INPUT#, PRINT#
+  * INPUT #, PRINT #
   * CLOAD, CSAVE
 
 `CR` (13, &0D) is used as a line/data terminator in both situations.
@@ -111,8 +111,8 @@ The five devices that can be redirected are as follows:
 |  KI  | &01 |Keyboard Input |  In  |INPUT            |
 |  DO  | &02 |Display Output |  Out |PRINT            |
 |  PO  | &04 |Printer Output |  Out |LPRINT, LLIST    |
-|  CI  | &08 |Cassette Input |  In  |CLOAD, INPUT#    |
-|  CO  | &10 |Cassette Output|  Out |CSAVE, PRINT#    |
+|  CI  | &08 |Cassette Input |  In  |CLOAD, INPUT #   |
+|  CO  | &10 |Cassette Output|  Out |CSAVE, PRINT #   |
 
 Individual communication parameters can be omitted (the comma will remain) in which case the default values will be used (300 baud, No parity, 8 data bits, 1 stop bit).
 
@@ -126,11 +126,11 @@ Used to set communication parameters such as baud rate and number of data bits a
 
 > SETCOM 300,N,8,1,CI,CO
 
-* Baud rate: 110, 300, 1200.
-* Parity: N (None), E (Even), O (Odd).
-* Data bits: 7, 8.
-* Stop bits: 1, 2.
-* Device: KI (Keyboard Input), DO (Display Output), PO (Printer Output), CI (Cassette Input), CO (Cassette Output).
+* **Baud rate:** 110, 300, 1200.
+* **Parity:** N (None), E (Even), O (Odd).
+* **Data bits:** 7, 8.
+* **Stop bits:** 1, 2.
+* **Device:** KI (Keyboard Input), DO (Display Output), PO (Printer Output), CI (Cassette Input), CO (Cassette Output).
 
 Default communication parameters are 300 baud, no parity, 8 data bits and 1 stop bit.
 
@@ -192,3 +192,107 @@ When the KI (Keyboard Input) device has been redirected, this command reads ASCI
 |:------------|:-----------------|:------------------------------|
 |RUN `ENTER`  |IN EXCURSION OF KI|1+2, RS-232C `CR`<br>SIN30 `CR`|
 |             |3.RS-232C0.5      |                               |
+
+### LPRINT
+
+When the PO (Printer Output) device has been redirected, this command sends ASCII text to the serial port.
+
+> LPRINT "THE ANSWER IS ";A
+
+Numeric values will be formatted according to the specified USING format.
+
+### LLIST
+
+When the PO (Printer Output) device has been redirected, this command lists the current program as ASCII text to the serial port.
+
+> LLIST
+
+LLIST on its own lists the entire program.
+
+> LLIST start,end
+
+LLIST with a start and end parameter lists the program between the lines "start" and "end".
+
+### PRINT
+
+When the DO (Display Output) device has been redirected, this command sends ASCII text to the serial port.
+
+> PRINT "RS-232C"
+
+Numeric values will not be formatted according to the specified USING format.
+
+### CSAVE
+
+When the CO (Cassette Output) device has been redirected, this command sends the current program in binary format to the serial port.
+
+> CSAVE
+
+A `CR` terminator follows the program data. Filenames and machine code programs are not supported.
+
+### CLOAD
+
+When the CI (Cassette Input) device has been redirected, this command loads a program in binary format from the serial port.
+
+A `CR` terminator must follow the program data to signify the end of the program. Filenames and machine code programs are not supported.
+
+### PRINT #
+
+When the CO (Cassette Output) device has been redirected, this command sends variable data in binary format to the serial port.
+
+> PRINT #
+
+When used alone all of the preallocated variables (A-Z) and the array A() variables with subscript numbers greater than 26 are transmitted.
+
+> PRINT #X
+
+When a preallocated variable or array A() variable is specified then that variable and all subsequent variables (including array A() variables with subscript numbers greater than 26) are transmitted.
+
+> PRINT #B(\*)
+
+When a user-dimensioned array variable is specified with an asterisk enclosed in the parentheses then the contents of that specific array variable are transmitted.
+You cannot transmit a single element of an array.
+
+> PRINT #X,B(\*),F$(\*)
+
+More than one starting variable can be included in the variable list.
+A `CR` terminator is sent after all variables listed in the PRINT # command have been transmitted.
+
+As `CR` may appear within the data itself it's not sufficient to record data from the serial port until a `CR` terminator is seen.
+Instead, the first five bytes sent over the serial port can be used to calculate the total length of the data:
+
+#### Pre-allocated variables or array A()
+
+The sequence &FE, &00, &00, &00, &00 is sent over the serial port, followed by a number of 8-byte variables.
+After the last 8-byte variable has been sent, a terminator byte of &0F is sent.
+
+#### User-dimensioned array variables
+
+* Two bytes are sent indicating the length of the following data in bytes, most significant byte first.
+* One byte is sent containing the upper bound of the array's second dimension (0 for single-dimension arrays).
+* One byte is sent containing the upper bound of the array's first dimension.
+* One byte is sent containing the size of each array element in bytes (8 for numeric variables, 16 for character strings unless modified with \* when dimensioning the array).
+
+The array's element data then follows.
+As the size of the array is explicitly recorded in the above five-byte header, there is no need for a terminator byte as with the pre-allocated variables.
+
+### INPUT #
+
+When the CI (Cassette Input) device has been redirected, this command receives variable data in binary format from the serial port.
+
+> INPUT #
+
+When used alone the preallocated variables are loaded started from A.
+
+> INPUT #X
+
+When a preallocated variable or array A() variable is specified then variables are loaded starting from the specified variable.
+
+> INPUT #B(*)
+
+When a user-dimensioned array variable is specified with an asterisk enclosed in the parentheses then the contents of that specific array variable is loaded.
+You cannot load a single element of an array.
+
+> INPUT #X,B(\*),F$(\*)
+
+More than one starting variable can be included in the variable list.
+A `CR` terminator needs to be sent after all variables listed in the INPUT # command to end the transfer.
