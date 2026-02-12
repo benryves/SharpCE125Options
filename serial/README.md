@@ -120,7 +120,7 @@ At least one device must be specified. To disable the serial interface, use SETC
 
 ## BASIC programming reference
 
-### SETCOM (statement)
+### SETCOM
 
 Used to set communication parameters such as baud rate and number of data bits as well as which I/O devices should be redirected to or from the serial interface.
 
