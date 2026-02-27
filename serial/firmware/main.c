@@ -186,7 +186,14 @@ bool sharp_serial_data_in(uint8_t mode, uint8_t *value) {
 		switch (mode) {
 			case SHARP_CMD_KEYGET:
 			case SHARP_CMD_INPUT:
-				if (sharp_char_to_token((char)*value, value)) return true;
+				if (sharp_char_to_token((char)*value, value)) {
+					// Is it a ',' in an INPUT command?
+					if (*value == 0x1B && mode == SHARP_CMD_INPUT) {
+						// Yes, so turn into an ENTER.
+						*value = 0x00;
+					}
+					return true;
+				}
 				break;
 			default:
 				return true;
