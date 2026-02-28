@@ -37,8 +37,8 @@ void keyboard_enable_clock_interrupt() {
 
 bool sharp_key_in(uint8_t *value) {
 	if (keyboard_key_received_flag) {
-		char c = keyboard_buffer_dequeue();
-		return sharp_char_to_token(c, value);
+		*value = keyboard_buffer_dequeue();
+		return true;
 	} else {
 		return false;
 	}

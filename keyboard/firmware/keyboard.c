@@ -15,7 +15,6 @@ volatile uint8_t keyboard_buffer_count = 0;
 volatile uint8_t keyboard_buffer_read_ptr = 0;
 volatile uint8_t keyboard_buffer_write_ptr = 0;
 
-volatile uint8_t keyboard_reset_flag = 0;
 volatile uint8_t keyboard_key_received_flag = 0;
 
 char keyboard_buffer_dequeue(void) {
@@ -83,7 +82,6 @@ void keyboard_reset(void) {
 	KEYBOARD_DATA_HIGH();
 	keyboard_clear_receive_buffer();
 	keyboard_enable_clock_interrupt();
-	keyboard_reset_flag = 0;
 	memset((uint8_t*)keyboard_key_state, 0, 16);
 }
 
@@ -204,16 +202,7 @@ void keyboard_byte_received(uint8_t value) {
 							}
 							// If it's a usable key (0xFF) enqueue it.
 							if (key != 0xFF && (!pre_pressed || keyboard_typematic_enabled)) {
-								// Is it a printable key?
-								if (pgm_read_byte(keyboard_unprintable_data + data_offset / 8) & (0x80 >> (data_offset & 7))) {
-									// Non-printable key
-								} else {
-									keyboard_buffer_enqueue(key);
-									if (key == 0x7F && ((keyboard_modifier & 0b1100) == 0b1100)) {
-										keyboard_reset_flag = !0;
-									}
-								}
-							}
+								keyboard_buffer_enqueue(key);							}
 						}
 					}
 				}
