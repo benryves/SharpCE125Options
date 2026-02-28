@@ -1,171 +1,298 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<keyboard version="1" title="UK">
-  <key friendlyname="-" scancode="78" devicecode="24" isextended="False" ismodifier="False" modifiermask="1">
+<keyboard version="1" title="UK" keyset="SharpPC1251">
+  <key friendlyname="-" scancode="78" devicecode="24" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="54" isnonprintable="False" />
     <value modifier="1" value="78" isnonprintable="False" />
+    <value modifier="4" value="166" isnonprintable="False" />
+    <value modifier="5" value="190" isnonprintable="False" />
   </key>
-  <key friendlyname="'" scancode="82" devicecode="80" secondarydevicecode="73" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="'" scancode="82" devicecode="80" secondarydevicecode="73" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="18" isnonprintable="False" />
     <value modifier="1" value="30" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="142" isnonprintable="False" />
   </key>
-  <key friendlyname="#" scancode="93" devicecode="91" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="#" scancode="93" devicecode="91" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="21" isnonprintable="False" />
     <value modifier="1" value="77" isnonprintable="False" />
+    <value modifier="4" value="133" isnonprintable="False" />
+    <value modifier="5" value="189" isnonprintable="False" />
   </key>
-  <key friendlyname="," scancode="65" devicecode="103" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="," scancode="65" devicecode="103" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="27" isnonprintable="False" />
     <value modifier="1" value="51" isnonprintable="False" />
+    <value modifier="4" value="139" isnonprintable="False" />
+    <value modifier="5" value="163" isnonprintable="False" />
   </key>
-  <key friendlyname="." scancode="73" devicecode="104" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="." scancode="73" devicecode="104" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="74" isnonprintable="False" />
     <value modifier="1" value="50" isnonprintable="False" />
+    <value modifier="4" value="186" isnonprintable="False" />
+    <value modifier="5" value="162" isnonprintable="False" />
   </key>
-  <key friendlyname="/" scancode="74" devicecode="105" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="/" scancode="74" devicecode="105" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="56" isnonprintable="False" />
     <value modifier="1" value="19" isnonprintable="False" />
+    <value modifier="4" value="168" isnonprintable="False" />
+    <value modifier="5" value="131" isnonprintable="False" />
   </key>
-  <key friendlyname=";" scancode="76" devicecode="88" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname=";" scancode="76" devicecode="88" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="28" isnonprintable="False" />
     <value modifier="1" value="29" isnonprintable="False" />
+    <value modifier="4" value="140" isnonprintable="False" />
+    <value modifier="5" value="141" isnonprintable="False" />
   </key>
-  <key friendlyname="[" scancode="84" devicecode="57" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="[" scancode="84" devicecode="57" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="26" isnonprintable="False" />
     <value modifier="1" value="255" isnonprintable="False" />
+    <value modifier="4" value="138" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="\" scancode="97" devicecode="121" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="\" scancode="97" devicecode="121" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="23" isnonprintable="False" />
     <value modifier="1" value="255" isnonprintable="False" />
+    <value modifier="4" value="135" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="]" scancode="91" devicecode="89" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="]" scancode="91" devicecode="89" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="25" isnonprintable="False" />
     <value modifier="1" value="255" isnonprintable="False" />
+    <value modifier="4" value="137" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="`" scancode="14" devicecode="46" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="`" scancode="14" devicecode="46" isextended="False" ismodifier="False" modifiermask="4">
     <value modifier="0" value="75" isnonprintable="False" />
+    <value modifier="4" value="187" isnonprintable="False" />
   </key>
-  <key friendlyname="=" scancode="85" devicecode="94" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="=" scancode="85" devicecode="94" isextended="False" ismodifier="False" modifiermask="13">
     <value modifier="0" value="52" isnonprintable="False" />
     <value modifier="1" value="53" isnonprintable="False" />
+    <value modifier="4" value="164" isnonprintable="False" />
+    <value modifier="5" value="165" isnonprintable="False" />
+    <value modifier="8" value="244" isnonprintable="False" />
+    <value modifier="9" value="255" isnonprintable="False" />
+    <value modifier="12" value="255" isnonprintable="False" />
+    <value modifier="13" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="0" scancode="69" devicecode="40" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="0" scancode="69" devicecode="40" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="64" isnonprintable="False" />
     <value modifier="1" value="49" isnonprintable="False" />
+    <value modifier="4" value="176" isnonprintable="False" />
+    <value modifier="5" value="161" isnonprintable="False" />
   </key>
-  <key friendlyname="1" scancode="22" devicecode="49" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="1" scancode="22" devicecode="49" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="65" isnonprintable="False" />
     <value modifier="1" value="20" isnonprintable="False" />
+    <value modifier="4" value="177" isnonprintable="False" />
+    <value modifier="5" value="132" isnonprintable="False" />
   </key>
-  <key friendlyname="2" scancode="30" devicecode="50" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="2" scancode="30" devicecode="50" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="66" isnonprintable="False" />
     <value modifier="1" value="18" isnonprintable="False" />
+    <value modifier="4" value="178" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="3" scancode="38" devicecode="18" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="3" scancode="38" devicecode="18" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="67" isnonprintable="False" />
     <value modifier="1" value="21" isnonprintable="False" />
+    <value modifier="4" value="179" isnonprintable="False" />
+    <value modifier="5" value="133" isnonprintable="False" />
   </key>
-  <key friendlyname="4" scancode="37" devicecode="19" isextended="False" ismodifier="False" modifiermask="3">
+  <key friendlyname="4" scancode="37" devicecode="19" isextended="False" ismodifier="False" modifiermask="7">
     <value modifier="0" value="68" isnonprintable="False" />
     <value modifier="1" value="24" isnonprintable="False" />
     <value modifier="2" value="75" isnonprintable="False" />
     <value modifier="3" value="255" isnonprintable="False" />
+    <value modifier="4" value="180" isnonprintable="False" />
+    <value modifier="5" value="136" isnonprintable="False" />
+    <value modifier="6" value="187" isnonprintable="False" />
+    <value modifier="7" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="5" scancode="46" devicecode="20" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="5" scancode="46" devicecode="20" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="69" isnonprintable="False" />
     <value modifier="1" value="22" isnonprintable="False" />
+    <value modifier="4" value="181" isnonprintable="False" />
+    <value modifier="5" value="134" isnonprintable="False" />
   </key>
-  <key friendlyname="6" scancode="54" devicecode="53" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="6" scancode="54" devicecode="53" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="70" isnonprintable="False" />
     <value modifier="1" value="57" isnonprintable="False" />
+    <value modifier="4" value="182" isnonprintable="False" />
+    <value modifier="5" value="169" isnonprintable="False" />
   </key>
-  <key friendlyname="7" scancode="61" devicecode="37" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="7" scancode="61" devicecode="37" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="71" isnonprintable="False" />
     <value modifier="1" value="31" isnonprintable="False" />
+    <value modifier="4" value="183" isnonprintable="False" />
+    <value modifier="5" value="143" isnonprintable="False" />
   </key>
-  <key friendlyname="8" scancode="62" devicecode="22" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="8" scancode="62" devicecode="22" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="72" isnonprintable="False" />
     <value modifier="1" value="55" isnonprintable="False" />
+    <value modifier="4" value="184" isnonprintable="False" />
+    <value modifier="5" value="167" isnonprintable="False" />
   </key>
-  <key friendlyname="9" scancode="70" devicecode="39" isextended="False" ismodifier="False" modifiermask="1">
+  <key friendlyname="9" scancode="70" devicecode="39" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="73" isnonprintable="False" />
     <value modifier="1" value="48" isnonprintable="False" />
+    <value modifier="4" value="185" isnonprintable="False" />
+    <value modifier="5" value="160" isnonprintable="False" />
   </key>
-  <key friendlyname="A" scancode="28" devicecode="66" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="A" scancode="28" devicecode="66" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="81" isnonprintable="False" />
+    <value modifier="1" value="225" isnonprintable="False" />
+    <value modifier="4" value="193" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="B" scancode="50" devicecode="101" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="B" scancode="50" devicecode="101" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="82" isnonprintable="False" />
+    <value modifier="1" value="226" isnonprintable="False" />
+    <value modifier="4" value="194" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="C" scancode="33" devicecode="83" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="C" scancode="33" devicecode="83" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="83" isnonprintable="False" />
+    <value modifier="1" value="227" isnonprintable="False" />
+    <value modifier="4" value="195" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="D" scancode="35" devicecode="51" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="D" scancode="35" devicecode="51" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="84" isnonprintable="False" />
+    <value modifier="1" value="228" isnonprintable="False" />
+    <value modifier="4" value="196" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="E" scancode="36" devicecode="35" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="E" scancode="36" devicecode="35" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="85" isnonprintable="False" />
+    <value modifier="1" value="229" isnonprintable="False" />
+    <value modifier="4" value="197" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="F" scancode="43" devicecode="68" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="F" scancode="43" devicecode="68" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="86" isnonprintable="False" />
+    <value modifier="1" value="230" isnonprintable="False" />
+    <value modifier="4" value="198" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="G" scancode="52" devicecode="84" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="G" scancode="52" devicecode="84" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="87" isnonprintable="False" />
+    <value modifier="1" value="231" isnonprintable="False" />
+    <value modifier="4" value="199" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="H" scancode="51" devicecode="85" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="H" scancode="51" devicecode="85" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="88" isnonprintable="False" />
+    <value modifier="1" value="232" isnonprintable="False" />
+    <value modifier="4" value="200" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="I" scancode="67" devicecode="38" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="I" scancode="67" devicecode="38" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="89" isnonprintable="False" />
+    <value modifier="1" value="233" isnonprintable="False" />
+    <value modifier="4" value="201" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="J" scancode="59" devicecode="70" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="J" scancode="59" devicecode="70" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="90" isnonprintable="False" />
+    <value modifier="1" value="234" isnonprintable="False" />
+    <value modifier="4" value="202" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="K" scancode="66" devicecode="71" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="K" scancode="66" devicecode="71" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="91" isnonprintable="False" />
+    <value modifier="1" value="235" isnonprintable="False" />
+    <value modifier="4" value="203" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="L" scancode="75" devicecode="87" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="L" scancode="75" devicecode="87" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="92" isnonprintable="False" />
+    <value modifier="1" value="236" isnonprintable="False" />
+    <value modifier="4" value="204" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="M" scancode="58" devicecode="102" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="M" scancode="58" devicecode="102" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="93" isnonprintable="False" />
+    <value modifier="1" value="237" isnonprintable="False" />
+    <value modifier="4" value="205" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="N" scancode="49" devicecode="86" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="N" scancode="49" devicecode="86" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="94" isnonprintable="False" />
+    <value modifier="1" value="238" isnonprintable="False" />
+    <value modifier="4" value="206" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="O" scancode="68" devicecode="55" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="O" scancode="68" devicecode="55" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="95" isnonprintable="False" />
+    <value modifier="1" value="239" isnonprintable="False" />
+    <value modifier="4" value="207" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="P" scancode="77" devicecode="56" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="P" scancode="77" devicecode="56" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="96" isnonprintable="False" />
+    <value modifier="1" value="240" isnonprintable="False" />
+    <value modifier="4" value="208" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Q" scancode="21" devicecode="17" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="Q" scancode="21" devicecode="17" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="97" isnonprintable="False" />
+    <value modifier="1" value="255" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="R" scancode="45" devicecode="52" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="R" scancode="45" devicecode="52" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="98" isnonprintable="False" />
+    <value modifier="1" value="242" isnonprintable="False" />
+    <value modifier="4" value="210" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="S" scancode="27" devicecode="82" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="S" scancode="27" devicecode="82" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="99" isnonprintable="False" />
+    <value modifier="1" value="243" isnonprintable="False" />
+    <value modifier="4" value="211" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="T" scancode="44" devicecode="36" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="T" scancode="44" devicecode="36" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="100" isnonprintable="False" />
+    <value modifier="1" value="255" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="U" scancode="60" devicecode="54" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="U" scancode="60" devicecode="54" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="101" isnonprintable="False" />
+    <value modifier="1" value="245" isnonprintable="False" />
+    <value modifier="4" value="213" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="V" scancode="42" devicecode="100" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="V" scancode="42" devicecode="100" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="102" isnonprintable="False" />
+    <value modifier="1" value="246" isnonprintable="False" />
+    <value modifier="4" value="214" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="W" scancode="29" devicecode="34" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="W" scancode="29" devicecode="34" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="103" isnonprintable="False" />
+    <value modifier="1" value="247" isnonprintable="False" />
+    <value modifier="4" value="215" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="X" scancode="34" devicecode="67" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="X" scancode="34" devicecode="67" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="104" isnonprintable="False" />
+    <value modifier="1" value="248" isnonprintable="False" />
+    <value modifier="4" value="216" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Y" scancode="53" devicecode="69" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="Y" scancode="53" devicecode="69" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="105" isnonprintable="False" />
+    <value modifier="1" value="249" isnonprintable="False" />
+    <value modifier="4" value="217" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Z" scancode="26" devicecode="98" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="Z" scancode="26" devicecode="98" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="106" isnonprintable="False" />
+    <value modifier="1" value="250" isnonprintable="False" />
+    <value modifier="4" value="218" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
   <key friendlyname="F1" scancode="5" devicecode="114" isextended="False" ismodifier="False" modifiermask="0">
     <value modifier="0" value="177" isnonprintable="False" />
@@ -194,6 +321,9 @@
   <key friendlyname="F9" scancode="1" devicecode="120" isextended="False" ismodifier="False" modifiermask="0">
     <value modifier="0" value="185" isnonprintable="False" />
   </key>
+  <key friendlyname="Alt" scancode="17" devicecode="3" secondarydevicecode="6" isextended="False" ismodifier="True" modifierindex="3" istoggle="False">
+    <value modifier="0" value="255" isnonprintable="False" />
+  </key>
   <key friendlyname="F10" scancode="9" devicecode="31" isextended="False" ismodifier="False" modifiermask="0">
     <value modifier="0" value="176" isnonprintable="False" />
   </key>
@@ -201,9 +331,6 @@
     <value modifier="0" value="255" isnonprintable="False" />
   </key>
   <key friendlyname="F12" scancode="7" devicecode="30" isextended="False" ismodifier="False" modifiermask="0">
-    <value modifier="0" value="255" isnonprintable="False" />
-  </key>
-  <key friendlyname="Alt" scancode="17" devicecode="3" secondarydevicecode="6" isextended="False" ismodifier="True" modifierindex="3" istoggle="False">
     <value modifier="0" value="255" isnonprintable="False" />
   </key>
   <key friendlyname="Tab" scancode="13" devicecode="97" isextended="False" ismodifier="False" modifiermask="0">
@@ -218,93 +345,144 @@
   <key friendlyname="Down" scancode="114" devicecode="42" isextended="True" ismodifier="False" modifiermask="0">
     <value modifier="0" value="13" isnonprintable="True" />
   </key>
-  <key friendlyname="Enter" scancode="90" devicecode="74" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="Enter" scancode="90" devicecode="74" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="0" isnonprintable="True" />
+    <value modifier="1" value="244" isnonprintable="False" />
+    <value modifier="4" value="164" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
   <key friendlyname="Home" scancode="108" devicecode="63" isextended="True" ismodifier="False" modifiermask="0">
-    <value modifier="0" value="20" isnonprintable="True" />
+    <value modifier="0" value="255" isnonprintable="False" />
   </key>
   <key friendlyname="Left" scancode="107" devicecode="26" isextended="True" ismodifier="False" modifiermask="0">
     <value modifier="0" value="15" isnonprintable="True" />
   </key>
-  <key friendlyname="Num -" scancode="123" devicecode="60" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="Num -" scancode="123" devicecode="60" isextended="False" ismodifier="False" modifiermask="4">
     <value modifier="0" value="54" isnonprintable="False" />
+    <value modifier="4" value="166" isnonprintable="False" />
   </key>
-  <key friendlyname="Num *" scancode="124" devicecode="92" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="Num *" scancode="124" devicecode="92" isextended="False" ismodifier="False" modifiermask="4">
     <value modifier="0" value="55" isnonprintable="False" />
+    <value modifier="4" value="167" isnonprintable="False" />
   </key>
-  <key friendlyname="Num ." scancode="113" devicecode="77" isextended="False" ismodifier="False" modifiermask="32">
+  <key friendlyname="Num ." scancode="113" devicecode="77" isextended="False" ismodifier="False" modifiermask="36">
     <value modifier="0" value="6" isnonprintable="True" />
+    <value modifier="4" value="255" isnonprintable="False" />
     <value modifier="32" value="74" isnonprintable="False" />
+    <value modifier="36" value="186" isnonprintable="False" />
   </key>
-  <key friendlyname="Num +" scancode="121" devicecode="59" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="Num +" scancode="121" devicecode="59" isextended="False" ismodifier="False" modifiermask="4">
     <value modifier="0" value="53" isnonprintable="False" />
+    <value modifier="4" value="165" isnonprintable="False" />
   </key>
-  <key friendlyname="Num 0" scancode="112" devicecode="107" isextended="False" ismodifier="False" modifiermask="33">
+  <key friendlyname="Num 0" scancode="112" devicecode="107" isextended="False" ismodifier="False" modifiermask="37">
     <value modifier="0" value="5" isnonprintable="True" />
     <value modifier="1" value="64" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="176" isnonprintable="False" />
     <value modifier="32" value="64" isnonprintable="False" />
     <value modifier="33" value="5" isnonprintable="True" />
+    <value modifier="36" value="176" isnonprintable="False" />
+    <value modifier="37" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Num 1" scancode="105" devicecode="108" isextended="False" ismodifier="False" modifiermask="33">
+  <key friendlyname="Num 1" scancode="105" devicecode="108" isextended="False" ismodifier="False" modifiermask="37">
     <value modifier="0" value="255" isnonprintable="False" />
     <value modifier="1" value="65" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="177" isnonprintable="False" />
     <value modifier="32" value="65" isnonprintable="False" />
     <value modifier="33" value="255" isnonprintable="False" />
+    <value modifier="36" value="177" isnonprintable="False" />
+    <value modifier="37" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Num 2" scancode="114" devicecode="125" isextended="False" ismodifier="False" modifiermask="33">
+  <key friendlyname="Num 2" scancode="114" devicecode="125" isextended="False" ismodifier="False" modifiermask="37">
     <value modifier="0" value="13" isnonprintable="True" />
     <value modifier="1" value="66" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="178" isnonprintable="False" />
     <value modifier="32" value="66" isnonprintable="False" />
     <value modifier="33" value="13" isnonprintable="True" />
+    <value modifier="36" value="178" isnonprintable="False" />
+    <value modifier="37" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Num 3" scancode="122" devicecode="109" isextended="False" ismodifier="False" modifiermask="33">
+  <key friendlyname="Num 3" scancode="122" devicecode="109" isextended="False" ismodifier="False" modifiermask="37">
     <value modifier="0" value="255" isnonprintable="False" />
     <value modifier="1" value="67" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="179" isnonprintable="False" />
     <value modifier="32" value="67" isnonprintable="False" />
     <value modifier="33" value="255" isnonprintable="False" />
+    <value modifier="36" value="179" isnonprintable="False" />
+    <value modifier="37" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Num 4" scancode="107" devicecode="123" isextended="False" ismodifier="False" modifiermask="33">
+  <key friendlyname="Num 4" scancode="107" devicecode="123" isextended="False" ismodifier="False" modifiermask="37">
     <value modifier="0" value="15" isnonprintable="True" />
     <value modifier="1" value="68" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="180" isnonprintable="False" />
     <value modifier="32" value="68" isnonprintable="False" />
     <value modifier="33" value="15" isnonprintable="True" />
+    <value modifier="36" value="180" isnonprintable="False" />
+    <value modifier="37" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Num 5" scancode="115" devicecode="124" isextended="False" ismodifier="False" modifiermask="33">
+  <key friendlyname="Num 5" scancode="115" devicecode="124" isextended="False" ismodifier="False" modifiermask="37">
     <value modifier="0" value="255" isnonprintable="False" />
     <value modifier="1" value="69" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="181" isnonprintable="False" />
     <value modifier="32" value="69" isnonprintable="False" />
     <value modifier="33" value="255" isnonprintable="False" />
+    <value modifier="36" value="181" isnonprintable="False" />
+    <value modifier="37" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Num 6" scancode="116" devicecode="27" isextended="False" ismodifier="False" modifiermask="33">
+  <key friendlyname="Num 6" scancode="116" devicecode="27" isextended="False" ismodifier="False" modifiermask="37">
     <value modifier="0" value="14" isnonprintable="True" />
     <value modifier="1" value="70" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="182" isnonprintable="False" />
     <value modifier="32" value="70" isnonprintable="False" />
     <value modifier="33" value="14" isnonprintable="True" />
+    <value modifier="36" value="182" isnonprintable="False" />
+    <value modifier="37" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Num 7" scancode="108" devicecode="28" isextended="False" ismodifier="False" modifiermask="33">
+  <key friendlyname="Num 7" scancode="108" devicecode="28" isextended="False" ismodifier="False" modifiermask="37">
     <value modifier="0" value="255" isnonprintable="False" />
     <value modifier="1" value="71" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="183" isnonprintable="False" />
     <value modifier="32" value="71" isnonprintable="False" />
     <value modifier="33" value="255" isnonprintable="False" />
+    <value modifier="36" value="183" isnonprintable="False" />
+    <value modifier="37" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Num 8" scancode="117" devicecode="43" isextended="False" ismodifier="False" modifiermask="33">
+  <key friendlyname="Num 8" scancode="117" devicecode="43" isextended="False" ismodifier="False" modifiermask="37">
     <value modifier="0" value="12" isnonprintable="True" />
     <value modifier="1" value="72" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="184" isnonprintable="False" />
     <value modifier="32" value="72" isnonprintable="False" />
     <value modifier="33" value="12" isnonprintable="True" />
+    <value modifier="36" value="184" isnonprintable="False" />
+    <value modifier="37" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Num 9" scancode="125" devicecode="44" isextended="False" ismodifier="False" modifiermask="33">
+  <key friendlyname="Num 9" scancode="125" devicecode="44" isextended="False" ismodifier="False" modifiermask="37">
     <value modifier="0" value="255" isnonprintable="False" />
     <value modifier="1" value="73" isnonprintable="False" />
+    <value modifier="4" value="255" isnonprintable="False" />
+    <value modifier="5" value="185" isnonprintable="False" />
     <value modifier="32" value="73" isnonprintable="False" />
     <value modifier="33" value="255" isnonprintable="False" />
+    <value modifier="36" value="185" isnonprintable="False" />
+    <value modifier="37" value="255" isnonprintable="False" />
   </key>
   <key friendlyname="Pause" scancode="225" devicecode="45" isextended="False" ismodifier="False" modifiermask="0">
     <value modifier="0" value="7" isnonprintable="True" />
   </key>
-  <key friendlyname="Space" scancode="41" devicecode="99" isextended="False" ismodifier="False" modifiermask="0">
+  <key friendlyname="Space" scancode="41" devicecode="99" isextended="False" ismodifier="False" modifiermask="5">
     <value modifier="0" value="17" isnonprintable="False" />
+    <value modifier="1" value="241" isnonprintable="False" />
+    <value modifier="4" value="209" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
   <key friendlyname="AltGr" scancode="17" devicecode="3" secondarydevicecode="9" isextended="True" ismodifier="True" modifierindex="1" istoggle="False">
     <value modifier="0" value="255" isnonprintable="False" />
@@ -313,8 +491,9 @@
     <value modifier="0" value="2" isnonprintable="True" />
     <value modifier="1" value="3" isnonprintable="True" />
   </key>
-  <key friendlyname="Num /" scancode="74" devicecode="75" isextended="True" ismodifier="False" modifiermask="0">
+  <key friendlyname="Num /" scancode="74" devicecode="75" isextended="True" ismodifier="False" modifiermask="4">
     <value modifier="0" value="56" isnonprintable="False" />
+    <value modifier="4" value="168" isnonprintable="False" />
   </key>
   <key friendlyname="Power" scancode="55" isextended="True" ismodifier="False" modifiermask="0">
     <value modifier="0" value="1" isnonprintable="True" />
@@ -346,8 +525,11 @@
   <key friendlyname="Caps Lock" scancode="88" devicecode="65" isextended="False" ismodifier="True" modifierindex="4" istoggle="True" led="2">
     <value modifier="0" value="255" isnonprintable="False" />
   </key>
-  <key friendlyname="Num Enter" scancode="90" devicecode="61" isextended="True" ismodifier="False" modifiermask="0">
+  <key friendlyname="Num Enter" scancode="90" devicecode="61" isextended="True" ismodifier="False" modifiermask="5">
     <value modifier="0" value="0" isnonprintable="True" />
+    <value modifier="1" value="244" isnonprintable="False" />
+    <value modifier="4" value="164" isnonprintable="False" />
+    <value modifier="5" value="255" isnonprintable="False" />
   </key>
   <key friendlyname="Page Down" scancode="122" devicecode="79" isextended="True" ismodifier="False" modifiermask="0">
     <value modifier="0" value="255" isnonprintable="False" />
