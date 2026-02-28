@@ -76,7 +76,7 @@ flash: all
 
 fuses:
 ifeq ($(MCU),attiny4313)
-	$(AVRDUDE) -U lfuse:w:0xce:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m 
+	$(AVRDUDE) -U lfuse:w:0xe4:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
 endif
 	
 ## Other dependencies
