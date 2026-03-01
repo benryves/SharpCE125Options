@@ -1,12 +1,12 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-#define KEYBOARD_CLOCK (1)
+#define KEYBOARD_CLOCK (0)
 #define KEYBOARD_CLOCK_PORT (PORTB)
 #define KEYBOARD_CLOCK_PIN (PINB)
 #define KEYBOARD_CLOCK_DDR (DDRB)
 
-#define KEYBOARD_DATA (0)
+#define KEYBOARD_DATA (1)
 #define KEYBOARD_DATA_PORT (PORTB)
 #define KEYBOARD_DATA_PIN (PINB)
 #define KEYBOARD_DATA_DDR (DDRB)
@@ -24,14 +24,14 @@
 
 #if defined(__AVR_ATtiny4313__) || defined(__AVR_ATtiny2313__)
 
-#define KEYBOARD_PCINT_PINS (_BV(PCINT1))
+#define KEYBOARD_PCINT_PINS (_BV(PCINT0))
 #define KEYBOARD_PCINT_vect (PCINT0_vect)
 #define KEYBOARD_PCINT_IE (PCIE0)
 #define KEYBOARD_PCINT_MSK (PCMSK)
 
 #elif defined (__AVR_ATtiny84__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny24__)
 
-#define KEYBOARD_PCINT_PINS (_BV(PCINT9))
+#define KEYBOARD_PCINT_PINS (_BV(PCINT8))
 #define KEYBOARD_PCINT_vect (PCINT1_vect)
 #define KEYBOARD_PCINT_IE (PCIE1)
 #define KEYBOARD_PCINT_MSK (PCMSK1)
