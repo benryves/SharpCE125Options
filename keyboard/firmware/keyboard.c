@@ -3,6 +3,7 @@
 #include <string.h>
 #include <avr/pgmspace.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include "keyboard.h"
@@ -16,6 +17,36 @@ volatile uint8_t keyboard_buffer_read_ptr = 0;
 volatile uint8_t keyboard_buffer_write_ptr = 0;
 
 volatile uint8_t keyboard_key_received_flag = 0;
+
+#ifndef TIFR0
+#define TIFR0 TIFR
+#endif
+
+ISR(KEYBOARD_PCINT_vect) {
+	switch (keyboard_transmission_direction) {
+		case KEYBOARD_TRANSMISSION_DEVICE_TO_HOST:
+			if (!(KEYBOARD_CLOCK_PIN & _BV(KEYBOARD_CLOCK))) {
+				if (TIFR0 & _BV(TOV0)) keyboard_clear_receive_buffer();
+				keyboard_bit_received(KEYBOARD_DATA_PIN & _BV(KEYBOARD_DATA));
+				TCNT0 = 128;
+				TIFR0 |= _BV(TOV0);
+			}
+			break;
+		case KEYBOARD_TRANSMISSION_HOST_TO_DEVICE:
+			keyboard_send_bit();
+			break;
+	}
+}
+
+void keyboard_disable_clock_interrupt() {
+	GIMSK &= ~_BV(KEYBOARD_PCINT_IE);
+	KEYBOARD_PCINT_MSK &= ~KEYBOARD_PCINT_PINS;
+}
+
+void keyboard_enable_clock_interrupt() {
+	GIMSK |= _BV(KEYBOARD_PCINT_IE);
+	KEYBOARD_PCINT_MSK |= KEYBOARD_PCINT_PINS;
+}
 
 char keyboard_buffer_dequeue(void) {
 	if (keyboard_buffer_count == 0) return 0;
@@ -83,6 +114,7 @@ void keyboard_reset(void) {
 	keyboard_clear_receive_buffer();
 	keyboard_enable_clock_interrupt();
 	memset((uint8_t*)keyboard_key_state, 0, 16);
+	TCCR0B = 0b010 << CS00; // Prescaler = 8; timer overflows after 256us
 }
 
 void keyboard_byte_received(uint8_t value) {

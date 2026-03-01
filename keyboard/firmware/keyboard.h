@@ -22,6 +22,23 @@
 
 #define KEYBOARD_BUFFER_SIZE 16
 
+#if defined(__AVR_ATtiny4313__) || defined(__AVR_ATtiny2313__)
+
+#define KEYBOARD_PCINT_PINS (_BV(PCINT1))
+#define KEYBOARD_PCINT_vect (PCINT0_vect)
+#define KEYBOARD_PCINT_IE (PCIE0)
+#define KEYBOARD_PCINT_MSK (PCMSK)
+
+#elif defined (__AVR_ATtiny84__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny24__)
+
+#define KEYBOARD_PCINT_PINS (_BV(PCINT9))
+#define KEYBOARD_PCINT_vect (PCINT1_vect)
+#define KEYBOARD_PCINT_IE (PCIE1)
+#define KEYBOARD_PCINT_MSK (PCMSK1)
+
+#endif
+
+
 typedef enum {
 	KEYBOARD_TRANSMISSION_DEVICE_TO_HOST, // The device is sending data to the host (normal mode).
 	KEYBOARD_TRANSMISSION_HOST_TO_DEVICE, // The host is sending data to the device.
@@ -58,10 +75,6 @@ void keyboard_bit_received(uint8_t bit);
 void keyboard_send_byte(uint8_t value);
 
 void keyboard_send_bit(void);
-
-extern void keyboard_enable_clock_interrupt(void);
-
-extern void keyboard_disable_clock_interrupt(void);
 
 void keyboard_set_led_status(keyboard_led_status_t status);
 

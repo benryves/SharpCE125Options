@@ -4,7 +4,7 @@
 
 ## General Flags
 PROJECT = keyboard
-MCU = attiny4313
+MCU = attiny84
 F_CPU = 8000000
 TARGET = $(PROJECT).elf
 CC = avr-gcc
@@ -77,6 +77,10 @@ flash: all
 fuses:
 ifeq ($(MCU),attiny4313)
 	$(AVRDUDE) -U lfuse:w:0xe4:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
+endif
+
+ifneq (,$(filter $(MCU),attiny84 attiny44))
+	$(AVRDUDE) -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m 
 endif
 	
 ## Other dependencies

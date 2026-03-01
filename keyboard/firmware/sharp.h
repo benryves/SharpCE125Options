@@ -6,6 +6,8 @@
 
 #include "sharp_config.h"
 
+#if defined(__AVR_ATtiny4313__) || defined(__AVR_ATtiny2313__)
+
 #define SHARP_OP2  (0)
 #define SHARP_ACL  (1)
 #define SHARP_BUSY (2)
@@ -22,6 +24,33 @@
 #define SHARP_PCINT_IF (PCIF2)
 #define SHARP_PCINT_IE (PCIE2)
 #define SHARP_PCINT_MSK (PCMSK2)
+
+#define SHARP_WDT_vect (WDT_OVERFLOW_vect)
+#define SHARP_WDT_CR (WDTCR)
+
+#elif defined (__AVR_ATtiny84__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny24__)
+
+#define SHARP_OP2  (0)
+#define SHARP_ACL  (1)
+#define SHARP_BUSY (2)
+#define SHARP_DOUT (3)
+#define SHARP_DIN  (4)
+#define SHARP_ACK  (5)
+
+#define SHARP_PIN  (PINA)
+#define SHARP_PORT (PORTA)
+#define SHARP_DDR  (DDRA)
+
+#define SHARP_PCINT_PINS (_BV(PCINT0) | _BV(PCINT1) | _BV(PCINT2) | _BV(PCINT3))
+#define SHARP_PCINT_vect (PCINT0_vect)
+#define SHARP_PCINT_IF (PCIF0)
+#define SHARP_PCINT_IE (PCIE0)
+#define SHARP_PCINT_MSK (PCMSK0)
+
+#define SHARP_WDT_vect (WDT_vect)
+#define SHARP_WDT_CR (WDTCSR)
+
+#endif
 
 #define SHARP_CMD_COMSTRING (0x2B)
 #define SHARP_CMD_KEYONOFF  (0x2E)

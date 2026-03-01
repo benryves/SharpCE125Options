@@ -21,8 +21,8 @@ uint8_t sharp_byte_in = 0;
 
 volatile bool sharp_timeout = false;
 
-ISR(WDT_OVERFLOW_vect) {
-	WDTCR |= _BV(WDIE);
+ISR(SHARP_WDT_vect) {
+	SHARP_WDT_CR |= _BV(WDIE);
 	sharp_timeout = true;
 }
 
@@ -34,7 +34,7 @@ void sharp_init(void) {
 	// Enable watchdog timer (handles timeouts)
 	wdt_enable(WDTO_15MS);
 	wdt_reset();
-	WDTCR |= _BV(WDIE);
+	SHARP_WDT_CR |= _BV(WDIE);
 	
 	// Enable pin change interrupts (wakes from sleep)
 	SHARP_PCINT_MSK |= SHARP_PCINT_PINS;
