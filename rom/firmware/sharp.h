@@ -152,8 +152,12 @@ void sharp_init(void);
 bool sharp_update(void);
 void sharp_sleep(void);
 
+#ifdef SHARP_UTIL_CHAR_TO_TOKEN
 bool sharp_char_to_token(char c, uint8_t *token);
+#endif
+#ifdef SHARP_UTIL_TOKEN_TO_CHAR
 bool sharp_token_to_char(uint8_t token, char *c);
+#endif
 
 #if SHARP_SUPPORT_CMD_OUTSTAT
 extern void sharp_serial_outstat(uint8_t value);
