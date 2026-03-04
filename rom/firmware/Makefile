@@ -10,6 +10,9 @@ TARGET = $(PROJECT).elf
 CC = avr-gcc
 AVRDUDE = avrdude -p $(MCU)
 
+## Includes
+INCLUDES = -I. -I../../lib
+
 ## Options common to compile, link and assembly rules
 COMMON = -mmcu=$(MCU)
 
@@ -36,7 +39,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 COMPILE = $(CC) $(INCLUDES) $(CFLAGS)
 
-OBJECTS = main.o sharp.o
+OBJECTS = main.o ../../lib/sharp.o
 
 ## Build
 all: $(TARGET) $(PROJECT).elf $(PROJECT).hex size
