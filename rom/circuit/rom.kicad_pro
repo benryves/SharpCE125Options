@@ -60,8 +60,8 @@
       ],
       "drc_exclusions": [
         [
-          "lib_footprint_mismatch|49360000|67310000|d63b8aa1-3db9-45a3-96e9-bb169f3dbd78|00000000-0000-0000-0000-000000000000",
-          "Pin assignments are intentionally reversed"
+          "lib_footprint_mismatch|133286500|109228500|d63b8aa1-3db9-45a3-96e9-bb169f3dbd78|00000000-0000-0000-0000-000000000000",
+          "Pin assignments are reversed to match CE-125; silkscreen adjusted to allowe placement closer to board edge."
         ]
       ],
       "meta": {
@@ -136,7 +136,7 @@
         "min_hole_to_hole": 0.25,
         "min_microvia_diameter": 0.2,
         "min_microvia_drill": 0.1,
-        "min_resolved_spokes": 2,
+        "min_resolved_spokes": 1,
         "min_silk_clearance": 0.0,
         "min_text_height": 0.8,
         "min_text_thickness": 0.08,
