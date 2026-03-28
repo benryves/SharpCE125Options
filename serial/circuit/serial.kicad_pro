@@ -52,7 +52,12 @@
         }
       },
       "diff_pair_dimensions": [],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "lib_footprint_mismatch|151138500|138493500|2a6a7dd3-7f9b-43ea-b8f9-5e0f0cf99f95|00000000-0000-0000-0000-000000000000",
+          "Pin assignments are reversed to match CE-125; silkscreen adjusted to allow placement closer to board edge."
+        ]
+      ],
       "meta": {
         "version": 2
       },
