@@ -61,7 +61,7 @@
       "drc_exclusions": [
         [
           "lib_footprint_mismatch|133286500|109228500|d63b8aa1-3db9-45a3-96e9-bb169f3dbd78|00000000-0000-0000-0000-000000000000",
-          "Pin assignments are reversed to match CE-125; silkscreen adjusted to allowe placement closer to board edge."
+          "Pin assignments are reversed to match CE-125; silkscreen adjusted to allow placement closer to board edge."
         ]
       ],
       "meta": {
