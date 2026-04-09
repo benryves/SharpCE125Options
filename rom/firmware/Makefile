@@ -4,8 +4,12 @@
 
 ## General Flags
 PROJECT = rom
-MCU = attiny13
+MCU = attiny85
+ifeq ($(MCU),attiny13)
 F_CPU = 4800000
+else
+F_CPU = 6400000
+endif
 TARGET = $(PROJECT).elf
 CC = avr-gcc
 AVRDUDE = avrdude -p $(MCU)
@@ -88,6 +92,10 @@ endif
 
 ifeq ($(MCU),attiny13)
 	$(AVRDUDE) -U lfuse:w:0x79:m -U hfuse:w:0xff:m 
+endif
+
+ifneq (,$(filter $(MCU),attiny85 attiny45 attiny25))
+	$(AVRDUDE) -U lfuse:w:0xe3:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m 
 endif
 
 ## Other dependencies

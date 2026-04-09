@@ -52,7 +52,7 @@
 #define SHARP_WDT_CR (WDTCSR)
 #define SHARP_WDT_IE (WDIE)
 
-#elif defined(__AVR_ATtiny13__)
+#elif defined(__AVR_ATtiny13__) || defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny25__)
 
 #define SHARP_OP2  (0)
 #define SHARP_ACL  (5)
@@ -73,8 +73,13 @@
 
 #define SHARP_WDT_vect (WDT_vect)
 #define SHARP_WDT_CR (WDTCR)
-#define SHARP_WDT_IE (WDTIE)
+#define SHARP_WDT_IE (WDIE)
 
+#endif
+
+#ifdef __AVR_ATtiny13__
+#undef SHARP_WDT_IE
+#define SHARP_WDT_IE (WDTIE)
 #endif
 
 #define SHARP_CMD_COMSTRING (0x2B)
