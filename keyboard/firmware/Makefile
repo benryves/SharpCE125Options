@@ -4,7 +4,7 @@
 
 ## General Flags
 PROJECT = keyboard
-MCU = attiny84
+MCU = attiny44
 F_CPU = 8000000
 TARGET = $(PROJECT).elf
 CC = avr-gcc
