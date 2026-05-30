@@ -4430,7 +4430,7 @@
 		)
 		(uuid "065aadda-9c0b-40c8-9cda-b102d1836c79")
 	)
-	(label "BUSY"
+	(label "DSR"
 		(at 246.38 40.64 180)
 		(effects
 			(font
@@ -4500,7 +4500,7 @@
 		)
 		(uuid "4ab0d2bb-1713-463f-96f6-54b620f65c6a")
 	)
-	(label "OP2"
+	(label "RXD"
 		(at 259.08 43.18 0)
 		(effects
 			(font
@@ -4560,7 +4560,7 @@
 		)
 		(uuid "6a5ce85b-4d0e-4d79-860e-e874cd69e453")
 	)
-	(label "Dout"
+	(label "DCD"
 		(at 246.38 43.18 180)
 		(effects
 			(font
@@ -4570,7 +4570,7 @@
 		)
 		(uuid "6ba99f78-77b7-4127-b4cb-18c9fab991c6")
 	)
-	(label "~{ACL}"
+	(label "~{RESET}"
 		(at 246.38 45.72 180)
 		(effects
 			(font
