@@ -235,7 +235,7 @@ When the CI (Cassette Input) device has been redirected, this command loads a pr
 
 A `CR` terminator must follow the program data to signify the end of the program. Filenames and machine code programs are not supported.
 
-### PRINT #
+### PRINT \#
 
 When the CO (Cassette Output) device has been redirected, this command sends variable data in binary format to the serial port.
 
@@ -275,7 +275,7 @@ After the last 8-byte variable has been sent, a terminator byte of &0F is sent.
 The array's element data then follows.
 As the size of the array is explicitly recorded in the above five-byte header, there is no need for a terminator byte as with the pre-allocated variables.
 
-### INPUT #
+### INPUT \#
 
 When the CI (Cassette Input) device has been redirected, this command receives variable data in binary format from the serial port.
 
@@ -333,7 +333,7 @@ Communication parameters and notification of the redirected devices are only sen
 ## Quirks and limitations
 
 The LPRINT and PRINT commands still assume the printer is 24 characters wide.
-Printing a single numeric values will align it inside a 24 character field; printing two values with a comma between them will align them inside 12 character fields.
+Printing a single numeric value will align it inside a 24 character field; printing two values with a comma between them will align them inside 12 character fields.
 
 Program listings printed with LLIST are also affected by the 24 character limit.
 Individual lines are wrapped to avoid breaking a keyword across multiple lines; additional spaces are printed at the end of each wrapped line to advance the cursor to the next line and additional spaces are printed at the start of each wrapped line to intend them.
