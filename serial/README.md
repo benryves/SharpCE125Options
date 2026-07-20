@@ -390,8 +390,6 @@ For example, to redirect cassette devices CI and CO:
 
 > POKE &C6B7,&08 OR &10
 
-You will be restricted to the default 
-
 ## Quirks and limitations
 
 The LPRINT and PRINT commands still assume the printer is 24 characters wide.
