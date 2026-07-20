@@ -55,7 +55,7 @@ all: $(TARGET) $(PROJECT).elf $(PROJECT).hex size
 .S.o:
 	$(COMPILE) -x assembler-with-cpp -c $< -o $@
 
-##Link
+## Link
 $(TARGET): $(OBJECTS)
 	 $(CC) $(LDFLAGS) $(OBJECTS) $(LINKONLYOBJECTS) $(LIBDIRS) $(LIBS) -o $(TARGET)
 
@@ -70,7 +70,7 @@ $(TARGET): $(OBJECTS)
 
 size: ${TARGET}
 	@echo
-	@avr-size -C --mcu=${MCU} ${TARGET}
+	@avr-size --format=avr --mcu=${MCU} ${TARGET}
 
 ## Clean target
 .PHONY: clean
