@@ -38,21 +38,26 @@ uint8_t sharp_serial_instat(void) {
 }
 
 uint16_t baud_rates[] = {
-	300,
-	110,
-	1200,
+	300,  // Supported by SETCOM
+	110,  // Supported by SETCOM
+	1200, // Supported by SETCOM
+	600,  // Non-standard
+	2400, // Non-standard (300*8)
+	75,   // Non-standard
+	9600, // Non-standard (1200*8)
+	4800, // Non-standard (600*8)
 };
 
 uint8_t enabled_devices = 0;
 
 void sharp_serial_setcom(uint8_t mode, uint8_t devices) {
 	
-	uint8_t baud_index = mode & 3;
+	uint8_t baud_index = ((mode >> 4) & 4) | (mode & 3);
 	uint8_t parity = (mode >> 2) & 3;
 	uint8_t data_bits = 8 - ((mode >> 4) & 1);
 	uint8_t stop_bits = 1 + ((mode >> 5) & 1);
 	
-	if (baud_index < sizeof(baud_rates) && parity < 3) {
+	if (parity < 3) {
 		uart_empty_read_buffer();
 		uart_empty_write_buffer();
 		uart_init(baud_rates[baud_index], data_bits, parity, stop_bits);
