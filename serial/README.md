@@ -2,7 +2,7 @@
 
 ## Specifications
 
-* **Baud rate:** 110, 300 or 1200
+* **Baud rate:** 110, 300 or 1200 as standard via SETCOM; 75, 600, 2400, 4800 and 9600 via custom code.
 * **Data bits:** 7 or 8.
 * **Parity:** None, even or odd.
 * **Stop bits:** 1 or 2.
@@ -23,7 +23,7 @@
 |Command|Example     |Function                                                            |
 |:------|:-----------|:-------------------------------------------------------------------|
 |SETCOM |SETCOM 300,N,8,1,PO|Sets communication parameters and device redirection.        |
-|       |SETCOM OFF  |Resets communication parameters and device redirection.             |
+|       |SETCOM OFF  |Resets device redirection.                                          |
 |OUTSTAT|OUTSTAT 0   |Sets status of RS-232 output signals.                               |
 |INPUT  |INPUT "A=";A|Loads the variable with ASCII data input from the RS-232 port.      |
 |INPUT #|INPUT #A    |Loads the variable with binary data input from the RS-232 port.     |
@@ -310,11 +310,11 @@ After executing the KEY ON command the computer will constantly check for incomi
 
 The KEY OFF command tells the computer to stop check for incoming key presses from the RS-232 port.
 
-## Use with the SHARP PC-1245
+## Configuration variables
 
-The SETCOM command is disabled on the SHARP PC-1245, which means it is not possible to use it to configure the communication parameters or redirect devices to the parallel port.
+The communication parameters and device redirection state are stored in two variables in the computer's memory.
 
-Redirection can instead be enabled by POKEing the value of the redirected devices to address &C6B7:
+The bit array for redirected devices can be found at address &C6B7:
 
 |Symbol|Value|Item           |In/Out|Affected commands|
 |:----:|:---:|:--------------|:----:|:----------------|
@@ -324,11 +324,73 @@ Redirection can instead be enabled by POKEing the value of the redirected device
 |  CI  | &08 |Cassette Input |  In  |CLOAD, INPUT #   |
 |  CO  | &10 |Cassette Output|  Out |CSAVE, PRINT #   |
 
+This value is checked when any of the affected commands is used to determine whether to redirect the data via the serial port instead of the default device.
+This means you can enable or disable device redirection without using SETCOM, just POKE.
 For example, to redirect cassette devices CI and CO:
 
 > POKE &C6B7,&08 OR &10
 
-Communication parameters and notification of the redirected devices are only sent to the serial interface when using SETCOM, so the communication parameters cannot be set with a simple POKE.
+The communication parameters can be found at address &C6B8:
+
+|Parameter       |Value|Bits|
+|:---------------|:---:|----:
+|Baud rate (300) | &00 | 1~0|
+|Baud rate (110) | &01 | 1~0|
+|Baud rate (1200)| &02 | 1~0|
+|Parity (None)   | &00 | 3~2|
+|Parity (Even)   | &04 | 3~2|
+|Parity (Odd)    | &08 | 3~2|
+|Data bits (8)   | &00 |   4|
+|Data bits (7)   | &10 |   4|
+|Stop bits (1)   | &00 |   5|
+|Stop bits (2)   | &20 |   5|
+
+The communication parameters need to be sent to the serial interface for them to take effect and so POKEing a new value into the computer's memory is not enough to change them.
+However, a side-effect of SETCOM OFF is that it clears the device redirection bit array at &C6B7 and then sends this new zero value to the serial interface along with the current communication parameters at &C6B8.
+This means you can POKE a custom value to &C6B8, send it to the serial interface with SETCOM OFF, and then enable redirection for the desired devices by POKEing the appropriate value to &C6B7.
+
+This technique has been used to add five additional baud rates to the three currently supported by SETCOM, giving eight in total:
+
+|Parameter       |Value|Bits |
+|:---------------|:---:|----:|
+|Baud rate (300) | &00 |6,1~0|
+|Baud rate (110) | &01 |6,1~0|
+|Baud rate (1200)| &02 |6,1~0|
+|Baud rate (600) | &03 |6,1~0|
+|Baud rate (2400)| &40 |6,1~0|
+|Baud rate (75)  | &41 |6,1~0|
+|Baud rate (9600)| &42 |6,1~0|
+|Baud rate (4800)| &43 |6,1~0|
+
+A sample program that enables one of the additional baud rates is shown below:
+
+> 10:SETCOM,,,2,CI,CO  
+> 20:B=&42: GOSUB "BAUD"  
+> 30:PRINT COM$  
+> 40:END  
+> 100:"BAUD": POKE &C6B8,B OR (&BC AND PEEK &C6B8)  
+> 110:D= PEEK &C6B7: SETCOM OFF  
+> 120:POKE &C6B7,D: RETURN
+
+Line 10 sets the communication parameters using SETCOM.
+Line 20 sets B to &42 (the value for 9600 baud from the table above) and calls the BAUD subroutine to change the baud rate.
+Line 30 then shows the updated communication parameters on the display, confirming the switch to 9600 baud.
+
+The BAUD subroutine starts on line 100.
+It first updates the baud rate bits in &C6B8, then backs up the device redirection bit array from &C6B7.
+SETCOM OFF is then used to send the updated communication parameters to the serial interface.
+Finally, the old device redirection bit array is restored to &C6B7 to re-enable any redirected devices that were disabled by SETCOM OFF.
+
+## Use with the SHARP PC-1245
+
+The SETCOM command is disabled on the SHARP PC-1245, which means it is not possible to use it to configure the communication parameters or redirect devices to the serial port.
+
+You can still enable device redirection by POKEing the appropriate configuration value into the bit array at address &C6B7.
+For example, to redirect cassette devices CI and CO:
+
+> POKE &C6B7,&08 OR &10
+
+You will be restricted to the default 
 
 ## Quirks and limitations
 
