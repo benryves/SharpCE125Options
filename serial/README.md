@@ -364,13 +364,13 @@ This technique has been used to add five additional baud rates to the three curr
 
 A sample program that enables one of the additional baud rates is shown below:
 
-> 10:SETCOM,,,2,CI,CO  
-> 20:B=&42: GOSUB "BAUD"  
-> 30:PRINT COM$  
-> 40:END  
-> 100:"BAUD": POKE &C6B8,B OR (&BC AND PEEK &C6B8)  
-> 110:D= PEEK &C6B7: SETCOM OFF  
-> 120:POKE &C6B7,D: RETURN
+> 10 SETCOM,,,2,CI,CO  
+> 20 B=&42: GOSUB "BAUD"  
+> 30 PRINT COM$  
+> 40 END  
+> 100 "BAUD": POKE &C6B8,B OR (&BC AND PEEK &C6B8)  
+> 110 D= PEEK &C6B7: SETCOM OFF  
+> 120 POKE &C6B7,D: RETURN
 
 Line 10 sets the communication parameters using SETCOM.
 Line 20 sets B to &42 (the value for 9600 baud from the table above) and calls the BAUD subroutine to change the baud rate.
@@ -389,6 +389,33 @@ You can still enable device redirection by POKEing the appropriate configuration
 For example, to redirect cassette devices CI and CO:
 
 > POKE &C6B7,&08 OR &10
+
+It should be possible to call into the ROM to replicate the behaviour of the missing SETCOM, however.
+The PC-1251 instruction manual contains an example on how to send characters directly to the printer (page 221, "Printout of special characters").
+This does point out that different ROM revisions have different addresses for the used routines, and it's likely that the same applies to the PC-1245.
+
+As such, I cannot present a one-size-fits-all solution, but this routine works on my particular PC-1245:
+
+|Assembly           |Machine code (Hex)|Machine code (Decimal)|
+|:------------------|:-----------------|:---------------------|
+|LIA 70	            |&02, &70          |2, 112                |
+|CALL PCU_WRITE_BYTE|&78, &7D, &6F     |120, 125, 111         |
+|LIDP C6B8          |&10, &C6, &B8     |16, 198, 184          |
+|LDD	               |&57               |87                    |
+|CALL PRINT_QUEUE   |&78, &7B, &91     |120, 123, 145         |
+|CAL SETDEV_PTR	    |&F1, &66          |241, 102              |
+|LDD	               |&57	              |87                    |
+|JP 6C1E           	|&79, &6C, &1E     |121, 108, 30          |
+
+When included in a BASIC program, the routine might look like this:
+
+> 10 DIM Z$(1)*6  
+> 20 POKE &C5BE,2,112,120,125,111,16,198,184,87,120,123,145,241,102,87,121,108,30  
+> 30 POKE &C6B7,&04,&42  
+> 40 CALL &C5BE  
+> 50 PRINT COM$
+
+Line 30 sets the redirected device to PO (Printer Output) and the communication parameters to 9600 8N1 so the program should display "9600,N,8,1,PO" on the computer's LCD.
 
 ## Quirks and limitations
 
