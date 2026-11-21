@@ -1,5 +1,11 @@
 # RS-232 serial interface
 
+> [!WARNING]
+> The Sharp CE-125's power supply has a reversed polarity, i.e. the power supply pin VP has a _negative_ voltage relative to the ground pin GND.
+> To keep the serial interface's circuit simple, it's connected "backwards" to the power supply, with the result that the serial port's GND is not at the same potential as the CE-125's other ground connections.  
+> This should not be a problem, but care must be taken to ensure that the serial port ground and CE-125 ground are not shorted together, for example by plugging the serial port and cassette interface input socket to the same device at the same time, or by splitting a power supply and powering both the CE-125 and a serial device from the same split power supply instead of using separate, isolated power supplies.
+> A low-current fuse **must** be included in the serial interface to protect the CE-125 against damage.
+
 ## Specifications
 
 * **Baud rate:** 110, 300 or 1200 as standard via SETCOM; 75, 600, 2400, 4800 and 9600 via custom code.
