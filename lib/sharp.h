@@ -98,59 +98,44 @@
 #define SHARP_CMD_ROM       (0x7C)
 #define SHARP_CMD_KEYGET    (0x7E)
 
-#define SHARP_SUPPORT_CMD_COMSTRING (0)
-#define SHARP_SUPPORT_CMD_KEYONOFF  (0)
-#define SHARP_SUPPORT_CMD_SETCOM    (0)
-#define SHARP_SUPPORT_CMD_OUTSTAT   (0)
-#define SHARP_SUPPORT_CMD_PRINT     (0)
-#define SHARP_SUPPORT_CMD_LPRINT    (0)
-#define SHARP_SUPPORT_CMD_LLIST     (0)
-#define SHARP_SUPPORT_CMD_CSAVE     (0)
-#define SHARP_SUPPORT_CMD_PRINTFILE (0)
-#define SHARP_SUPPORT_CMD_INSTAT    (0)
-#define SHARP_SUPPORT_CMD_INPUT     (0)
-#define SHARP_SUPPORT_CMD_CLOAD     (0)
-#define SHARP_SUPPORT_CMD_INPUTFILE (0)
-#define SHARP_SUPPORT_CMD_ROM       (0)
-#define SHARP_SUPPORT_CMD_KEYGET    (0)
+// #define SHARP_SUPPORT_CMD_COMSTRING
+// #define SHARP_SUPPORT_CMD_KEYONOFF
+// #define SHARP_SUPPORT_CMD_SETCOM
+// #define SHARP_SUPPORT_CMD_OUTSTAT
+// #define SHARP_SUPPORT_CMD_PRINT
+// #define SHARP_SUPPORT_CMD_LPRINT
+// #define SHARP_SUPPORT_CMD_LLIST
+// #define SHARP_SUPPORT_CMD_CSAVE
+// #define SHARP_SUPPORT_CMD_PRINTFILE
+// #define SHARP_SUPPORT_CMD_INSTAT
+// #define SHARP_SUPPORT_CMD_INPUT
+// #define SHARP_SUPPORT_CMD_CLOAD
+// #define SHARP_SUPPORT_CMD_INPUTFILE
+// #define SHARP_SUPPORT_CMD_ROM
+// #define SHARP_SUPPORT_CMD_KEYGET
 
 #ifdef SHARP_SUPPORT_CMDS_ROM
-#undef SHARP_SUPPORT_CMD_ROM
-#define SHARP_SUPPORT_CMD_ROM       (1)
+#define SHARP_SUPPORT_CMD_ROM
 #endif
 
 #ifdef SHARP_SUPPORT_CMDS_KEYBOARD
-#undef SHARP_SUPPORT_CMD_KEYONOFF
-#undef SHARP_SUPPORT_CMD_KEYGET
-#define SHARP_SUPPORT_CMD_KEYONOFF  (1)
-#define SHARP_SUPPORT_CMD_KEYGET    (1)
+#define SHARP_SUPPORT_CMD_KEYONOFF
+#define SHARP_SUPPORT_CMD_KEYGET
 #endif
 
 #ifdef SHARP_SUPPORT_CMDS_SERIAL
-#undef SHARP_SUPPORT_CMD_COMSTRING
-#undef SHARP_SUPPORT_CMD_SETCOM
-#undef SHARP_SUPPORT_CMD_OUTSTAT
-#undef SHARP_SUPPORT_CMD_PRINT
-#undef SHARP_SUPPORT_CMD_LPRINT
-#undef SHARP_SUPPORT_CMD_LLIST
-#undef SHARP_SUPPORT_CMD_CSAVE
-#undef SHARP_SUPPORT_CMD_PRINTFILE
-#undef SHARP_SUPPORT_CMD_INSTAT
-#undef SHARP_SUPPORT_CMD_INPUT
-#undef SHARP_SUPPORT_CMD_CLOAD
-#undef SHARP_SUPPORT_CMD_INPUTFILE
-#define SHARP_SUPPORT_CMD_COMSTRING (1)
-#define SHARP_SUPPORT_CMD_SETCOM    (1)
-#define SHARP_SUPPORT_CMD_OUTSTAT   (1)
-#define SHARP_SUPPORT_CMD_PRINT     (1)
-#define SHARP_SUPPORT_CMD_LPRINT    (1)
-#define SHARP_SUPPORT_CMD_LLIST     (1)
-#define SHARP_SUPPORT_CMD_CSAVE     (1)
-#define SHARP_SUPPORT_CMD_PRINTFILE (1)
-#define SHARP_SUPPORT_CMD_INSTAT    (1)
-#define SHARP_SUPPORT_CMD_INPUT     (1)
-#define SHARP_SUPPORT_CMD_CLOAD     (1)
-#define SHARP_SUPPORT_CMD_INPUTFILE (1)
+#define SHARP_SUPPORT_CMD_COMSTRING
+#define SHARP_SUPPORT_CMD_SETCOM
+#define SHARP_SUPPORT_CMD_OUTSTAT
+#define SHARP_SUPPORT_CMD_PRINT
+#define SHARP_SUPPORT_CMD_LPRINT
+#define SHARP_SUPPORT_CMD_LLIST
+#define SHARP_SUPPORT_CMD_CSAVE
+#define SHARP_SUPPORT_CMD_PRINTFILE
+#define SHARP_SUPPORT_CMD_INSTAT
+#define SHARP_SUPPORT_CMD_INPUT
+#define SHARP_SUPPORT_CMD_CLOAD
+#define SHARP_SUPPORT_CMD_INPUTFILE
 #endif
 
 void sharp_init(void);
@@ -164,31 +149,31 @@ bool sharp_char_to_token(char c, uint8_t *token);
 bool sharp_token_to_char(uint8_t token, char *c);
 #endif
 
-#if SHARP_SUPPORT_CMD_OUTSTAT
+#ifdef SHARP_SUPPORT_CMD_OUTSTAT
 extern void sharp_serial_outstat(uint8_t value);
 #endif
-#if SHARP_SUPPORT_CMD_INSTAT
+#ifdef SHARP_SUPPORT_CMD_INSTAT
 extern uint8_t sharp_serial_instat(void);
 #endif
-#if SHARP_SUPPORT_CMD_SETCOM
+#ifdef SHARP_SUPPORT_CMD_SETCOM
 extern void sharp_serial_setcom(uint8_t mode, uint8_t devices);
 #endif
-#if SHARP_SUPPORT_CMD_COMSTRING
+#ifdef SHARP_SUPPORT_CMD_COMSTRING
 extern void sharp_serial_comstring(bool (*ret)(uint8_t));
 #endif
 
-#if SHARP_SUPPORT_CMD_PRINT || SHARP_SUPPORT_CMD_LPRINT || SHARP_SUPPORT_CMD_LLIST || SHARP_SUPPORT_CMD_CSAVE || SHARP_SUPPORT_CMD_PRINTFILE || SHARP_SUPPORT_CMD_INPUT || SHARP_SUPPORT_CMD_CLOAD || SHARP_SUPPORT_CMD_INPUTFILE
+#if defined(SHARP_SUPPORT_CMD_PRINT) || defined(SHARP_SUPPORT_CMD_LPRINT) || defined(SHARP_SUPPORT_CMD_LLIST) || defined(SHARP_SUPPORT_CMD_CSAVE) || defined(SHARP_SUPPORT_CMD_PRINTFILE) || defined(SHARP_SUPPORT_CMD_INPUT) || defined(SHARP_SUPPORT_CMD_CLOAD) || defined(SHARP_SUPPORT_CMD_INPUTFILE)
 extern void sharp_serial_data_begin(uint8_t mode);
 extern void sharp_serial_data_out(uint8_t mode, uint8_t value);
 extern bool sharp_serial_data_in(uint8_t mode, uint8_t *value);
 extern void sharp_serial_data_end(uint8_t mode);
 #endif
 
-#if SHARP_SUPPORT_CMD_KEYGET
+#ifdef SHARP_SUPPORT_CMD_KEYGET
 extern bool sharp_key_in(uint8_t *value);
 #endif
 
-#if SHARP_SUPPORT_CMD_ROM
+#ifdef SHARP_SUPPORT_CMD_ROM
 extern bool sharp_rom(bool (*ret)(uint8_t));
 #endif
 

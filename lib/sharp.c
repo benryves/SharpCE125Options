@@ -44,13 +44,13 @@ void sharp_acl(void) {
 	sharp_bits_received = 0;
 	sharp_receive_buffer_count = 0;
 	if (sharp_receive_mode) {
-		#if SHARP_SUPPORT_CMD_PRINT || SHARP_SUPPORT_CMD_LPRINT || SHARP_SUPPORT_CMD_LLIST || SHARP_SUPPORT_CMD_CSAVE || SHARP_SUPPORT_CMD_PRINTFILE || SHARP_SUPPORT_CMD_INPUT || SHARP_SUPPORT_CMD_CLOAD || SHARP_SUPPORT_CMD_INPUTFILE
+		#if defined(SHARP_SUPPORT_CMD_PRINT) || defined(SHARP_SUPPORT_CMD_LPRINT) || defined(SHARP_SUPPORT_CMD_LLIST) || defined(SHARP_SUPPORT_CMD_CSAVE) || defined(SHARP_SUPPORT_CMD_PRINTFILE) || defined(SHARP_SUPPORT_CMD_INPUT) || defined(SHARP_SUPPORT_CMD_CLOAD) || defined(SHARP_SUPPORT_CMD_INPUTFILE)
 		sharp_serial_data_end(sharp_receive_mode);
 		#endif
 		sharp_receive_mode = 0;
 	}
 	if (sharp_send_mode) {
-		#if SHARP_SUPPORT_CMD_PRINT || SHARP_SUPPORT_CMD_LPRINT || SHARP_SUPPORT_CMD_LLIST || SHARP_SUPPORT_CMD_CSAVE || SHARP_SUPPORT_CMD_PRINTFILE || SHARP_SUPPORT_CMD_INPUT || SHARP_SUPPORT_CMD_CLOAD || SHARP_SUPPORT_CMD_INPUTFILE
+		#if defined(SHARP_SUPPORT_CMD_PRINT) || defined(SHARP_SUPPORT_CMD_LPRINT) || defined(SHARP_SUPPORT_CMD_LLIST) || defined(SHARP_SUPPORT_CMD_CSAVE) || defined(SHARP_SUPPORT_CMD_PRINTFILE) || defined(SHARP_SUPPORT_CMD_INPUT) || defined(SHARP_SUPPORT_CMD_CLOAD) || defined(SHARP_SUPPORT_CMD_INPUTFILE)
 		sharp_serial_data_end(sharp_send_mode);
 		#endif
 		sharp_send_mode = 0;
@@ -113,7 +113,7 @@ timeout:;
 	return sent;
 }
 
-#if SHARP_SUPPORT_CMD_INPUT || SHARP_SUPPORT_CMD_INPUTFILE || SHARP_SUPPORT_CMD_CLOAD || SHARP_SUPPORT_CMD_ROM
+#if defined(SHARP_SUPPORT_CMD_INPUT) || defined(SHARP_SUPPORT_CMD_INPUTFILE) || defined(SHARP_SUPPORT_CMD_CLOAD) || defined(SHARP_SUPPORT_CMD_ROM)
 uint8_t sharp_checksum;
 uint8_t sharp_checksum_count;
 uint8_t sharp_checksum_reset = 80;
@@ -124,7 +124,7 @@ void sharp_reset_checksum(void) {
 }
 #endif
 
-#if SHARP_SUPPORT_CMD_INPUTFILE || SHARP_SUPPORT_CMD_CLOAD || SHARP_SUPPORT_CMD_ROM
+#if defined(SHARP_SUPPORT_CMD_INPUTFILE) || defined(SHARP_SUPPORT_CMD_CLOAD) || defined(SHARP_SUPPORT_CMD_ROM)
 bool sharp_send_byte_with_checksum(uint8_t value) {
   
   // Send the byte
@@ -159,7 +159,7 @@ uint16_t sharp_data_count = 0;
 void sharp_received_byte(uint8_t value) {
 		
 	switch (sharp_receive_mode) {
-		#if SHARP_SUPPORT_CMD_SETCOM
+		#ifdef SHARP_SUPPORT_CMD_SETCOM
 		case SHARP_CMD_SETCOM:
 			sharp_receive_buffer[sharp_receive_buffer_count++] = value;
 			if (sharp_receive_buffer_count > 2) {
@@ -170,7 +170,7 @@ void sharp_received_byte(uint8_t value) {
 			}
 			break;
 		#endif
-		#if SHARP_SUPPORT_CMD_OUTSTAT
+		#ifdef SHARP_SUPPORT_CMD_OUTSTAT
 		case SHARP_CMD_OUTSTAT:
 			sharp_receive_buffer[sharp_receive_buffer_count++] = value;
 			if (sharp_receive_buffer_count > 1) {
@@ -180,34 +180,34 @@ void sharp_received_byte(uint8_t value) {
 			}
 			break;
 		#endif
-		#if SHARP_SUPPORT_CMD_PRINT || SHARP_SUPPORT_CMD_LPRINT || SHARP_SUPPORT_CMD_LLIST || SHARP_SUPPORT_CMD_CSAVE || SHARP_SUPPORT_CMD_PRINTFILE
-		#if SHARP_SUPPORT_CMD_PRINT
+		#if defined(SHARP_SUPPORT_CMD_PRINT) || defined(SHARP_SUPPORT_CMD_LPRINT) || defined(SHARP_SUPPORT_CMD_LLIST) || defined(SHARP_SUPPORT_CMD_CSAVE) || defined(SHARP_SUPPORT_CMD_PRINTFILE)
+		#ifdef SHARP_SUPPORT_CMD_PRINT
 		case SHARP_CMD_PRINT:
 		#endif
-		#if SHARP_SUPPORT_CMD_LPRINT
+		#ifdef SHARP_SUPPORT_CMD_LPRINT
 		case SHARP_CMD_LPRINT:
 		#endif
-		#if SHARP_SUPPORT_CMD_LLIST
+		#ifdef SHARP_SUPPORT_CMD_LLIST
 		case SHARP_CMD_LLIST:
 		#endif
-		#if SHARP_SUPPORT_CMD_CSAVE
+		#ifdef SHARP_SUPPORT_CMD_CSAVE
 		case SHARP_CMD_CSAVE:
 		#endif
-		#if SHARP_SUPPORT_CMD_PRINTFILE
+		#ifdef SHARP_SUPPORT_CMD_PRINTFILE
 		case SHARP_CMD_PRINTFILE:
 		#endif
 			switch (sharp_receive_mode) {
-				#if SHARP_SUPPORT_CMD_PRINT || SHARP_SUPPORT_CMD_LPRINT || SHARP_SUPPORT_CMD_LLIST || SHARP_SUPPORT_CMD_CSAVE
-				#if SHARP_SUPPORT_CMD_PRINT
+				#if defined(SHARP_SUPPORT_CMD_PRINT) || defined(SHARP_SUPPORT_CMD_LPRINT) || defined(SHARP_SUPPORT_CMD_LLIST) || defined(SHARP_SUPPORT_CMD_CSAVE)
+				#ifdef SHARP_SUPPORT_CMD_PRINT
 				case SHARP_CMD_PRINT:
 				#endif
-				#if SHARP_SUPPORT_CMD_LPRINT
+				#ifdef SHARP_SUPPORT_CMD_LPRINT
 				case SHARP_CMD_LPRINT:
 				#endif
-				#if SHARP_SUPPORT_CMD_LLIST
+				#ifdef SHARP_SUPPORT_CMD_LLIST
 				case SHARP_CMD_LLIST:
 				#endif
-				#if SHARP_SUPPORT_CMD_CSAVE
+				#ifdef SHARP_SUPPORT_CMD_CSAVE
 				case SHARP_CMD_CSAVE:
 				#endif
 					sharp_serial_data_out(sharp_receive_mode, value);
@@ -216,7 +216,7 @@ void sharp_received_byte(uint8_t value) {
 					}
 					break;
 				#endif
-				#if SHARP_SUPPORT_CMD_PRINTFILE
+				#ifdef SHARP_SUPPORT_CMD_PRINTFILE
 				case SHARP_CMD_PRINTFILE:
 					switch (sharp_data_header_count) {
 						case 0: // MSB of size
@@ -275,42 +275,42 @@ void sharp_received_byte(uint8_t value) {
 		#endif
 		default:
 			switch (value) {
-				#if SHARP_SUPPORT_CMD_COMSTRING
+				#ifdef SHARP_SUPPORT_CMD_COMSTRING
 				case SHARP_CMD_COMSTRING:
 					sharp_serial_comstring(&sharp_send_byte);
 					sharp_send_byte(0x0D);
 					break;
 				#endif
-				#if SHARP_SUPPORT_CMD_KEYONOFF
+				#ifdef SHARP_SUPPORT_CMD_KEYONOFF
 				case SHARP_CMD_KEYONOFF:
 					sharp_send_byte(SHARP_CMD_KEYONOFF);
 					sharp_send_byte(0x0D);
 					break;
 				#endif
-				#if SHARP_SUPPORT_CMD_SETCOM || SHARP_SUPPORT_CMD_OUTSTAT
-				#if SHARP_CMD_SETCOM
+				#if defined(SHARP_SUPPORT_CMD_SETCOM) || defined(SHARP_SUPPORT_CMD_OUTSTAT)
+				#ifdef SHARP_CMD_SETCOM
 				case SHARP_CMD_SETCOM:
 				#endif
-				#if SHARP_CMD_OUTSTAT
+				#ifdef SHARP_CMD_OUTSTAT
 				case SHARP_CMD_OUTSTAT:
 				#endif
 					sharp_receive_mode = value;
 					break;
 				#endif
-				#if SHARP_SUPPORT_CMD_PRINT || SHARP_SUPPORT_CMD_LPRINT || SHARP_SUPPORT_CMD_LLIST || SHARP_SUPPORT_CMD_CSAVE || SHARP_SUPPORT_CMD_PRINTFILE
-				#if SHARP_SUPPORT_CMD_PRINT
+				#if defined(SHARP_SUPPORT_CMD_PRINT) || defined(SHARP_SUPPORT_CMD_LPRINT) || defined(SHARP_SUPPORT_CMD_LLIST) || defined(SHARP_SUPPORT_CMD_CSAVE) || defined(SHARP_SUPPORT_CMD_PRINTFILE)
+				#ifdef SHARP_SUPPORT_CMD_PRINT
 				case SHARP_CMD_PRINT:
 				#endif
-				#if SHARP_SUPPORT_CMD_LPRINT
+				#ifdef SHARP_SUPPORT_CMD_LPRINT
 				case SHARP_CMD_LPRINT:
 				#endif
-				#if SHARP_SUPPORT_CMD_LLIST
+				#ifdef SHARP_SUPPORT_CMD_LLIST
 				case SHARP_CMD_LLIST:
 				#endif
-				#if SHARP_SUPPORT_CMD_CSAVE
+				#ifdef SHARP_SUPPORT_CMD_CSAVE
 				case SHARP_CMD_CSAVE:
 				#endif
-				#if SHARP_SUPPORT_CMD_PRINTFILE
+				#ifdef SHARP_SUPPORT_CMD_PRINTFILE
 				case SHARP_CMD_PRINTFILE:
 				#endif
 					sharp_data_header_count = 0;
@@ -319,21 +319,21 @@ void sharp_received_byte(uint8_t value) {
 					sharp_serial_data_begin(sharp_receive_mode);
 					break;
 				#endif
-				#if SHARP_SUPPORT_CMD_INSTAT
+				#ifdef SHARP_SUPPORT_CMD_INSTAT
 				case SHARP_CMD_INSTAT:
 					if (sharp_send_byte(sharp_serial_instat())) {
 						sharp_send_byte(0x0D);
 					}
 					break;
 				#endif
-				#if SHARP_SUPPORT_CMD_INPUT || SHARP_SUPPORT_CMD_INPUTFILE || SHARP_SUPPORT_CMD_CLOAD
-				#if SHARP_SUPPORT_CMD_INPUT
+				#if defined(SHARP_SUPPORT_CMD_INPUT) || defined(SHARP_SUPPORT_CMD_INPUTFILE) || defined(SHARP_SUPPORT_CMD_CLOAD)
+				#ifdef SHARP_SUPPORT_CMD_INPUT
 				case SHARP_CMD_INPUT:
 				#endif
-				#if SHARP_SUPPORT_CMD_INPUTFILE
+				#ifdef SHARP_SUPPORT_CMD_INPUTFILE
 				case SHARP_CMD_INPUTFILE:
 				#endif
-				#if SHARP_SUPPORT_CMD_CLOAD
+				#ifdef SHARP_SUPPORT_CMD_CLOAD
 				case SHARP_CMD_CLOAD:
 				#endif
 					sharp_reset_checksum();
@@ -345,17 +345,17 @@ void sharp_received_byte(uint8_t value) {
 					sharp_timeout = false;
 					break;
 				#endif
-				#if SHARP_SUPPORT_CMD_KEYGET
+				#ifdef SHARP_SUPPORT_CMD_KEYGET
 				case SHARP_CMD_KEYGET:
 					sharp_send_mode = value;
-					#if SHARP_SUPPORT_CMD_INPUT || SHARP_SUPPORT_CMD_INPUTFILE || SHARP_SUPPORT_CMD_CLOAD
+					#if defined(SHARP_SUPPORT_CMD_INPUT) || defined(SHARP_SUPPORT_CMD_INPUTFILE) || defined(SHARP_SUPPORT_CMD_CLOAD)
 					sharp_serial_data_begin(sharp_send_mode);
 					#endif
 					wdt_reset();
 					sharp_timeout = false;
 					break;
 				#endif
-				#if SHARP_SUPPORT_CMD_ROM
+				#ifdef SHARP_SUPPORT_CMD_ROM
 				case SHARP_CMD_ROM:
 					{
 						// Reset the sharp_checksum
@@ -404,49 +404,49 @@ bool sharp_update(void) {
 		// Are we about to receive a command byte?
 		if (sharp_bits_received == 8 && sharp_receive_mode == 0) {
 			switch (sharp_byte_in) {
-				#if SHARP_SUPPORT_CMD_COMSTRING
+				#ifdef SHARP_SUPPORT_CMD_COMSTRING
 				case SHARP_CMD_COMSTRING:
 				#endif
-				#if SHARP_SUPPORT_CMD_KEYONOFF
+				#ifdef SHARP_SUPPORT_CMD_KEYONOFF
 				case SHARP_CMD_KEYONOFF:
 				#endif
-				#if SHARP_SUPPORT_CMD_SETCOM
+				#ifdef SHARP_SUPPORT_CMD_SETCOM
 				case SHARP_CMD_SETCOM:
 				#endif
-				#if SHARP_SUPPORT_CMD_OUTSTAT
+				#ifdef SHARP_SUPPORT_CMD_OUTSTAT
 				case SHARP_CMD_OUTSTAT:
 				#endif
-				#if SHARP_SUPPORT_CMD_PRINT
+				#ifdef SHARP_SUPPORT_CMD_PRINT
 				case SHARP_CMD_PRINT:
 				#endif
-				#if SHARP_SUPPORT_CMD_LPRINT
+				#ifdef SHARP_SUPPORT_CMD_LPRINT
 				case SHARP_CMD_LPRINT:
 				#endif
-				#if SHARP_SUPPORT_CMD_LLIST
+				#ifdef SHARP_SUPPORT_CMD_LLIST
 				case SHARP_CMD_LLIST:
 				#endif
-				#if SHARP_SUPPORT_CMD_CSAVE
+				#ifdef SHARP_SUPPORT_CMD_CSAVE
 				case SHARP_CMD_CSAVE:
 				#endif
-				#if SHARP_SUPPORT_CMD_PRINTFILE
+				#ifdef SHARP_SUPPORT_CMD_PRINTFILE
 				case SHARP_CMD_PRINTFILE:
 				#endif
-				#if SHARP_SUPPORT_CMD_INSTAT
+				#ifdef SHARP_SUPPORT_CMD_INSTAT
 				case SHARP_CMD_INSTAT:
 				#endif
-				#if SHARP_SUPPORT_CMD_INPUT
+				#ifdef SHARP_SUPPORT_CMD_INPUT
 				case SHARP_CMD_INPUT:
 				#endif
-				#if SHARP_SUPPORT_CMD_CLOAD
+				#ifdef SHARP_SUPPORT_CMD_CLOAD
 				case SHARP_CMD_CLOAD:
 				#endif
-				#if SHARP_SUPPORT_CMD_INPUTFILE
+				#ifdef SHARP_SUPPORT_CMD_INPUTFILE
 				case SHARP_CMD_INPUTFILE:
 				#endif
-				#if SHARP_SUPPORT_CMD_ROM
+				#ifdef SHARP_SUPPORT_CMD_ROM
 				case SHARP_CMD_ROM:
 				#endif
-				#if SHARP_SUPPORT_CMD_KEYGET
+				#ifdef SHARP_SUPPORT_CMD_KEYGET
 				case SHARP_CMD_KEYGET:
 				#endif
 					break;
@@ -486,10 +486,10 @@ bool sharp_update(void) {
 		active = true;
 	}
 	
-	#if SHARP_SUPPORT_CMD_INPUT || SHARP_SUPPORT_CMD_KEYGET || SHARP_SUPPORT_CMD_INPUTFILE || SHARP_SUPPORT_CMD_CLOAD || SHARP_SUPPORT_CMD_CLOAD
+	#if defined(SHARP_SUPPORT_CMD_INPUT) || defined(SHARP_SUPPORT_CMD_KEYGET) || defined(SHARP_SUPPORT_CMD_INPUTFILE) || defined(SHARP_SUPPORT_CMD_CLOAD) || defined(SHARP_SUPPORT_CMD_CLOAD)
 	uint8_t value;
 	switch (sharp_send_mode) {
-		#if SHARP_SUPPORT_CMD_INPUT
+		#ifdef SHARP_SUPPORT_CMD_INPUT
 		case SHARP_CMD_INPUT:
 			if (sharp_serial_data_in(sharp_send_mode, &value) || ((value = 0xFF) && sharp_timeout)) {
 				if (sharp_send_byte(value)) {
@@ -501,7 +501,7 @@ bool sharp_update(void) {
 			}
 			break;
 		#endif
-		#if SHARP_SUPPORT_CMD_KEYGET
+		#ifdef SHARP_SUPPORT_CMD_KEYGET
 		case SHARP_CMD_KEYGET:
 			if (sharp_key_in(&value) || ((value = 0xFF) && sharp_timeout)) {
 				if (sharp_send_byte(value)) {
@@ -513,7 +513,7 @@ bool sharp_update(void) {
 			}
 			break;
 		#endif
-		#if SHARP_SUPPORT_CMD_INPUTFILE
+		#ifdef SHARP_SUPPORT_CMD_INPUTFILE
 		case SHARP_CMD_INPUTFILE:
 			// Send data with checksum
 			if (sharp_serial_data_in(sharp_send_mode, &value)) {
@@ -574,7 +574,7 @@ bool sharp_update(void) {
 			}
 			break;
 		#endif
-		#if SHARP_SUPPORT_CMD_CLOAD
+		#ifdef SHARP_SUPPORT_CMD_CLOAD
 		case SHARP_CMD_CLOAD:
 			// Send checksummed data
 			if (sharp_serial_data_in(sharp_send_mode, &value)) {
