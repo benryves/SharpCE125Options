@@ -256,3 +256,27 @@ want to convert to ASCII (the `sharp_token_to_char` utility function is provided
 
 This function is called when the computer resets the device following a serial data transfer,
 with `mode` being the same value described in `sharp_serial_data_begin`.
+
+## Utility functions
+
+Some additional utility functions are provided, but disabled by default.
+They can be enable via a `#define` in the project's `sharp_config.h` file:
+
+| Function                                         | Enable with #define      | Purpose                                       |
+|--------------------------------------------------|--------------------------|-----------------------------------------------|
+| bool sharp_char_to_token(char c, uint8_t *token) | SHARP_UTIL_TOKEN_TO_CHAR | Converts an ASCII character to a SHARP token. |
+| bool sharp_token_to_char(uint8_t token, char *c) | SHARP_UTIL_CHAR_TO_TOKEN | Converts a SHARP token to an ASCII character. |
+
+If the conversion is successful, the functions will return `true`;
+if the conversion cannot be carried out, the functions will return `false`.
+
+Note that due to limitations in the SHARP character set and a somewhat unusual mapping on the computers themselves,
+some characters are mapped between ASCII and their SHARP tokens as follows for consistency:
+
+|ASCII|SHARP|
+|:---:|:---:|
+|  '  | INS |
+|  \[ |  √  |
+|  \\ |  ¥  |
+|  \] |  π  |
+|  `  |  𝐄  |
