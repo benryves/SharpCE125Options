@@ -77,7 +77,7 @@ The available commands (all disabled by default) are as follows:
 | Command                     | Used by                                | Group definition            |
 |-----------------------------|----------------------------------------|-----------------------------|
 | SHARP_SUPPORT_CMD_ROM       | `ROM` command.                         | SHARP_SUPPORT_CMDS_ROM      |
-| SHARP_SUPPORT_CMD_KEYONOFF  | `KEY ON`/`KEY OFF command              | SHARP_SUPPORT_CMDS_KEYBOARD |
+| SHARP_SUPPORT_CMD_KEYONOFF  | `KEY ON`/`KEY OFF` command             | SHARP_SUPPORT_CMDS_KEYBOARD |
 | SHARP_SUPPORT_CMD_KEYGET    | Keyboard input after `KEY ON` command. | SHARP_SUPPORT_CMDS_KEYBOARD |
 | SHARP_SUPPORT_CMD_INSTAT    | `INSTAT` function.                     | SHARP_SUPPORT_CMDS_SERIAL   |
 | SHARP_SUPPORT_CMD_OUTSTAT   | `OUTSTAT` command.                     | SHARP_SUPPORT_CMDS_SERIAL   |
@@ -125,3 +125,87 @@ The three functions used are:
   If there is, this function will call the command-specific function in your program, then return `true`.
   If not, it will return `false`.
 * `sharp_sleep`: switches to a low power state to avoid battery drain.
+
+## Command functions
+
+When the library receives a command request from the connected computer,
+it will call a request-specific function that you need to implement to send an appropriate response back to the computer.
+
+These functions are documented below; for a more detailed explanation of how they should be used, please see the example
+projects included in this repository.
+
+### bool sharp_rom(bool (*ret)(uint8_t))
+
+Loads a program from the ROM program module.
+This command should send the entire program (in its raw tokenised BASIC form);
+the function pointer `ret` is the function you should call to send each byte.
+
+If `ret` returns `false` it indicates a communication error, so you should also stop sending the program and return `false`.
+If you get to the end of the program with no issues, you should return `true`.
+
+```
+const PROGMEM uint8_t rom_data[] = {
+    /* program data bytes */
+};
+
+bool sharp_rom(bool (*ret)(uint8_t)) {
+    for (size_t i = 0; i < sizeof(rom_data); ++i) {
+        if (!ret(pgm_read_byte(rom_data + i))) return false;
+    }
+    return true;
+}
+```
+
+### bool sharp_key_in(uint8_t *value)
+
+This function is called when the computer is waiting for a key from the keyboard after the `KEY ON` command has been executed.
+
+If a key is not currently available, return `false` from this function.
+If a key is available, store its key token in `value` and return `true`.
+
+### uint8_t sharp_serial_instat(void)
+
+This function is called in response to `<variable>=INSTAT`.
+You should return an 8-bit value corresponding to the status of your serial port.
+
+### void sharp_serial_outstat(uint8_t value)
+
+This function is called in response to `OUTSTAT <value>`.
+You should update the status of your serial port based on the supplied 8-bit value.
+
+### void sharp_serial_setcom(uint8_t mode, uint8_t devices)
+
+This function is called in response to `OUTSTAT`,
+where `mode` contains the communication parameters and `devices` contains the list of redirected variables.
+
+The `mode` byte is in the format `%00SDPPBB`, where:
+
+* `S` = Stop bits: `0` = 1 stop bit, `1` = 2 stop bits.
+* `D` = Data bits: `0` = 8 data bits, `1` = 7 data bits.
+* `PP` = Parity:
+    * `00` = No parity,
+    * `01` = Even parity,
+    * `10` = Odd parity.
+* `BB` = Baud rate:
+    * `00` = 300,
+    * `01` = 110,
+    * `10` = 1200.
+
+The `devices` byte is made up of any combination of the following bits:
+
+|Symbol|Value|Item           |
+|:-----|:----|:--------------|
+| KI   | &01 |Keyboard Input |
+| DO   | &02 |Display Output |
+| PO   | &04 |Printer Output |
+| CI   | &08 |Cassette Input |
+| CO   | &10 |Cassette Output|
+
+### void sharp_serial_comstring(bool (*ret)(uint8_t))
+
+This function is called in response to `<variable$>=COM$`.
+
+This should return a tokenised string corresponding to the currently-enabled communication parameters;
+the function pointer `ret` is the function you should call to send each byte.
+
+If `ret` returns `false` it indicates a communication error, so you should also stop sending the string and return.
