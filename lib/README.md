@@ -209,3 +209,50 @@ This should return a tokenised string corresponding to the currently-enabled com
 the function pointer `ret` is the function you should call to send each byte.
 
 If `ret` returns `false` it indicates a communication error, so you should also stop sending the string and return.
+
+### void sharp_serial_data_begin(uint8_t mode)
+
+This function is called at the start of any serial data transfer.
+`mode` corresponds to which particular serial operation is about to occur:
+
+* Input:
+    * `SHARP_CMD_INPUT`: `INPUT` when `KI` is redirected.
+    * `SHARP_CMD_INPUTFILE`: `INPUT #` when `CI` is redirected.
+    * `SHARP_CMD_CLOAD`: `CLOAD` when `CI` is redirected.
+* Output:
+    * `SHARP_CMD_PRINT`: `PRINT` when `DO` is redirected.
+    * `SHARP_CMD_PRINTFILE`: `PRINT #` when `CO` is redirected.
+    * `SHARP_CMD_CSAVE`: `CSAVE` when `CO` is redirected.
+    * `SHARP_CMD_LPRINT`: `LPRINT` when `PO` is redirected.
+    * `SHARP_CMD_LLIST`: `LLIST` when `PO` is redirected.
+
+In addition, if any of the above input commands are supported _and_ `SHARP_CMD_KEYGET` is also enabled,
+`sharp_serial_data_begin(SHARP_CMD_KEYGET)` will also be called before keyboard input is handled.
+
+### bool sharp_serial_data_in(uint8_t mode, uint8_t *value)
+
+This function is used to retrieve data from the serial port and transfer it back to the computer.
+`mode` is the input mode (the same value as described in `sharp_serial_data_begin`).
+
+If data is not currently available, return `false` from this function.
+If data is available, store the incoming byte in `value` and return `true`.
+
+Note that data is a token in the computer's native encoding.
+In the case of binary data transfers (e.g. `SHARP_CMD_CLOAD`, `SHARP_CMD_INPUTFILE`) you will probably want
+to transfer the data verbatim; for text transfers (e.g. `SHARP_CMD_INPUT`) you will probably
+want to convert from ASCII (the `sharp_char_to_token` utility function is provided for this purpose).
+
+### void sharp_serial_data_out(uint8_t mode, uint8_t value)
+
+This function is used to transfer data from the computer out of the serial port.
+`mode` is the output mode (the same value as described in `sharp_serial_data_begin`).
+
+The byte to transfer is in `value`; note that this is a tokenised byte in the computer's native encoding.
+In the case of binary data transfers (e.g. `SHARP_CMD_CSAVE`, `SHARP_CMD_PRINTFILE`) you will probably want
+to transfer the data verbatim; for text transfers (e.g. `SHARP_CMD_LPRINT`, `SHARP_CMD_LLIST`) you will probably
+want to convert to ASCII (the `sharp_token_to_char` utility function is provided for this purpose).
+
+### void sharp_serial_data_end(uint8_t mode)
+
+This function is called when the computer resets the device following a serial data transfer,
+with `mode` being the same value described in `sharp_serial_data_begin`.
